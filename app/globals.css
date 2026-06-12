@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background: #C49A6E;
+  color: #0E0907;
+}
+
+::-webkit-scrollbar {
+  width: 3px;
+}
+::-webkit-scrollbar-track {
+  background: #0E0907;
+}
+::-webkit-scrollbar-thumb {
+  background: #2E1E14;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #1A110C inset;
+  -webkit-text-fill-color: #F0E6D6;
+  caret-color: #F0E6D6;
+}
+
+select option {
+  background: #1A110C;
+  color: #F0E6D6;
+}
