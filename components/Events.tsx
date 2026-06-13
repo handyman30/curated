@@ -21,14 +21,14 @@ const RECENT_JOINS = [
 
 // Seeded signup counts per venue index so they look consistent
 const SEED_SIGNUPS = [
-  { men: 1, women: 2 },
+  { men: 2, women: 1 },
   { men: 1, women: 2 },
   { men: 0, women: 0 },
 ]
 
 const SEED_ATTENDEES: Record<string, Array<{ initial: string; name: string; gender: 'male' | 'female' }>> = {
   'evt-0': [
-    { initial: 'D', name: 'Dian R.', gender: 'female' },
+    { initial: 'D', name: 'Dian R.', gender: 'male' },
     { initial: 'J', name: 'Jennifer C.', gender: 'female' },
     { initial: 'H', name: 'Handy H.', gender: 'male' },
   ],
