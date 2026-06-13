@@ -47,7 +47,7 @@ export default function WaitlistForm() {
       await fetch('/.netlify/functions/waitlist-submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, gender: gender ?? '' }),
+        body: JSON.stringify({ ...form, gender: gender === 'women' ? 'female' : gender === 'men' ? 'male' : '' }),
       })
       if (form.email) sessionStorage.setItem('curated_email', form.email)
     } catch (err) {

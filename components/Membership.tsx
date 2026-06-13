@@ -5,15 +5,15 @@ import { useScrollAnimation } from '@/hooks/useScrollAnimation'
 const TIERS = [
   {
     name: 'Event',
-    price: 'Rp 50.000',
+    price: 'Rp 175.000',
     period: '/acara',
     tag: 'Mulai Di Sini',
-    description: 'Ikut gathering mingguan kami — 3 pria, 3 wanita, satu tempat. Kami yang kurasikan tamu undangannya.',
+    description: 'Gathering Sabtu — 3 pria, 3 wanita, satu venue premium. MC, games, drinks & snacks sudah termasuk.',
     features: [
+      'Welcome drinks & snacks (fries)',
+      'MC host + games (Kahoot, kartu, drawing)',
       'Venue premium di Jakarta',
-      'Tamu diverifikasi Curated',
-      'Maksimal 6 orang per acara',
-      'Tidak ada ghosting — semua hadir sungguhan',
+      'Tamu diverifikasi Curated — no randoms',
     ],
     cta: 'Lihat Acara',
     href: '#events',

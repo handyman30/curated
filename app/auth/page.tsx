@@ -19,10 +19,15 @@ export default function AuthPage() {
     setLoading(true)
 
     if (mode === 'register') {
-      const { error } = await supabase.auth.signUp({ email, password })
+      const { data, error } = await supabase.auth.signUp({ email, password })
       if (error) { setError(error.message); setLoading(false); return }
       sessionStorage.setItem('curated_email', email)
-      setDone(true)
+      // If email confirmation is disabled, session exists immediately → go straight to dashboard
+      if (data.session) {
+        router.push('/dashboard')
+      } else {
+        setDone(true)
+      }
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) { setError(error.message); setLoading(false); return }

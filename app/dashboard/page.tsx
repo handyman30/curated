@@ -17,6 +17,7 @@ type DiscoverProfile = {
   instagram: string
   linkedin: string
   avatar_initial: string
+  photo_url?: string
 }
 
 const FREE_VISIBLE = 4
@@ -146,8 +147,8 @@ export default function Dashboard() {
           <p className="text-cream/25 text-xs font-sans hidden md:block">No ghosting. Mutual interest confirmed first.</p>
         </div>
 
-        {/* Not enough members yet */}
-        {filtered.length < 3 && (
+        {/* Empty state */}
+        {filtered.length === 0 && (
           <div className="text-center py-32">
             <p className="font-serif font-light text-cream/30 text-2xl mb-3">Segera hadir</p>
             <p className="text-cream/20 text-sm font-sans max-w-xs mx-auto leading-relaxed">
@@ -156,8 +157,8 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Profile grid — only show once there are enough real members */}
-        {filtered.length >= 3 && (
+        {/* Profile grid */}
+        {filtered.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {filtered.map((profile, index) => {
               const isLiked = likes.has(profile.id)
@@ -178,10 +179,14 @@ export default function Dashboard() {
                     {/* Avatar + name */}
                     <div className="flex items-center gap-3">
                       <div
-                        className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-serif text-xl text-espresso font-semibold"
+                        className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-serif text-xl text-espresso font-semibold overflow-hidden"
                         style={{ background: 'linear-gradient(135deg, #C49A6E, #9A7050)' }}
                       >
-                        {profile.avatar_initial}
+                        {profile.photo_url ? (
+                          <img src={profile.photo_url} alt={profile.name} className="w-full h-full object-cover" />
+                        ) : (
+                          profile.avatar_initial
+                        )}
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-baseline gap-2">

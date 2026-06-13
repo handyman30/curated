@@ -45,6 +45,12 @@ export default function Navbar() {
 
         <div className="flex items-center gap-4">
           <a
+            href="/auth"
+            className="text-cream/40 hover:text-cream text-xs tracking-[0.15em] uppercase font-sans transition-colors duration-200 hidden md:block"
+          >
+            Log in
+          </a>
+          <a
             href="#waitlist"
             className="border border-cognac/50 text-cognac text-xs tracking-[0.15em] uppercase px-5 py-2.5 font-sans hover:bg-cognac hover:text-espresso transition-all duration-200"
           >
@@ -75,6 +81,9 @@ export default function Navbar() {
               {link.label}
             </a>
           ))}
+          <a href="/auth" onClick={() => setMenuOpen(false)} className="text-cream/60 text-sm tracking-[0.15em] uppercase font-sans hover:text-cream transition-colors">
+            Log in
+          </a>
         </div>
       </div>
     </nav>

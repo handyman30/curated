@@ -15,6 +15,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true })
   }
 
+  if (body.action === 'delete' && body.id) {
+    // Get profile first so we can remove from discover_profiles too
+    const { data: profile } = await admin.from('profiles').select('name').eq('id', body.id).single()
+    if (profile?.name) {
+      const firstName = profile.name.split(' ')[0]
+      const lastInitial = profile.name.split(' ')[1]?.[0] ?? ''
+      const displayName = lastInitial ? `${firstName} ${lastInitial}.` : firstName
+      await admin.from('discover_profiles').delete().eq('name', displayName).eq('is_bot', false)
+    }
+    const { error } = await admin.from('profiles').delete().eq('id', body.id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true })
+  }
+
   const { data, error } = await admin
     .from('profiles')
     .select('*')

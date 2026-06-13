@@ -7,8 +7,32 @@ export async function POST(req: NextRequest) {
   const admin = supabaseAdmin()
   const resend = new Resend(process.env.RESEND_API_KEY)
 
+  // Get full profile so we can copy it to discover_profiles
+  const { data: profile } = await admin.from('profiles').select('*').eq('id', id).single()
+
   // Update status
   await admin.from('profiles').update({ status: 'approved' }).eq('id', id)
+
+  // Add to discover_profiles so they appear in the dashboard
+  if (profile) {
+    const firstName = (profile.name || '').split(' ')[0]
+    const lastInitial = (profile.name || '').split(' ')[1]?.[0] ?? ''
+    const displayName = lastInitial ? `${firstName} ${lastInitial}.` : firstName
+
+    await admin.from('discover_profiles').insert({
+      name: displayName,
+      age: profile.age,
+      gender: profile.gender,
+      occupation: profile.occupation,
+      city: profile.city,
+      bio: profile.goals ?? '',
+      instagram: profile.instagram ?? '',
+      linkedin: profile.linkedin ?? '',
+      avatar_initial: firstName[0]?.toUpperCase() ?? '?',
+      is_bot: false,
+      is_active: true,
+    })
+  }
 
   // Send approval email with dashboard link
   const dashboardUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://join-curated.netlify.app'}/dashboard`
