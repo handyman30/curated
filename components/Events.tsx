@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import { useScrollAnimation } from '@/hooks/useScrollAnimation'
 
 const VENUES = [
-  { name: 'Anomali Coffee', address: 'Jl. Kemang Raya, Jakarta Selatan', time: '10:00', type: 'Coffee Morning' },
+  { name: 'Monolog', address: 'Plasa Senayan, Jakarta Selatan', time: '10:00', type: 'Coffee Morning' },
   { name: 'Tanamera Coffee', address: 'Jl. Wolter Monginsidi, Senopati', time: '10:30', type: 'Specialty Coffee' },
   { name: 'Common Grounds', address: 'Jl. Kemang Raya 72, Jakarta Selatan', time: '10:00', type: 'Brunch & Coffee' },
   { name: 'Kopi Tuku', address: 'Jl. Cipete Raya, Jakarta Selatan', time: '09:30', type: 'Morning Coffee' },

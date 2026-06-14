@@ -32,10 +32,10 @@ export default function AdminPage() {
     return [
       {
         id: 'evt-0',
-        venue: 'Osteria Gia',
-        address: 'Jl. Gunawarman, Kebayoran Baru',
-        ageGroup: '24–28 tahun',
-        date: `${dateStr} · 18:30 WIB`,
+        venue: 'Monolog',
+        address: 'Plasa Senayan, Jakarta Selatan',
+        ageGroup: 'Open · 23–36 tahun',
+        date: `${dateStr} · 10:00 WIB`,
         capacity: 3,
         attendees: [
           { name: 'Dian Rachmanda', gender: 'male', age: 28, photo: '/profiles/dian.jpg' },
