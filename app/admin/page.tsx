@@ -33,7 +33,7 @@ export default function AdminPage() {
       {
         id: 'evt-0',
         venue: 'Monolog',
-        address: 'Plasa Senayan, Jakarta Selatan',
+        address: 'Plaza Senayan, Jakarta Selatan',
         ageGroup: 'Open · 23–36 tahun',
         date: `${dateStr} · 10:00 WIB`,
         capacity: 3,
