@@ -30,12 +30,15 @@ function displayName(name: string, isPaid: boolean, isBlurred: boolean) {
 
 export default function Dashboard() {
   const router = useRouter()
+  type MyProfile = { id: string; name: string; status: string; occupation: string; age: number } | null
+
   const [profiles, setProfiles] = useState<DiscoverProfile[]>([])
   const [likes, setLikes] = useState<Set<string>>(new Set())
   const [isPaid] = useState(false)
   const [filter, setFilter] = useState<'all' | 'male' | 'female'>('all')
   const [loading, setLoading] = useState(true)
   const [userEmail, setUserEmail] = useState<string>('')
+  const [myProfile, setMyProfile] = useState<MyProfile>(undefined as unknown as MyProfile)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -43,6 +46,15 @@ export default function Dashboard() {
       setUserEmail(email)
       if (email) sessionStorage.setItem('curated_email', email)
       loadLikes(email)
+      if (email) {
+        fetch('/api/my-profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        }).then(r => r.json()).then(j => setMyProfile(j.profile ?? null))
+      } else {
+        setMyProfile(null)
+      }
     })
     loadProfiles()
   }, [])
@@ -128,6 +140,40 @@ export default function Dashboard() {
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-10">
+
+        {/* My application status */}
+        {myProfile === null && userEmail && (
+          <div className="mb-6 border border-cognac/25 p-4 flex items-center justify-between gap-4" style={{ background: 'rgba(196,154,110,0.05)' }}>
+            <p className="text-cream/60 text-sm font-sans">Kamu belum daftar waitlist — lengkapi profilmu dulu.</p>
+            <a href="/apply" className="flex-shrink-0 bg-cognac text-espresso text-xs tracking-[0.15em] uppercase font-sans font-semibold px-4 py-2 hover:bg-cognac-light transition-colors">
+              Daftar Sekarang
+            </a>
+          </div>
+        )}
+        {myProfile?.status === 'waitlist' && (
+          <div className="mb-6 border border-espresso-border p-4 flex items-center gap-3" style={{ background: '#1A110C' }}>
+            <span className="relative flex h-2 w-2 flex-shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cognac/60 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-cognac/70" />
+            </span>
+            <p className="text-cream/50 text-sm font-sans">
+              Aplikasimu sedang direview, {myProfile.name?.split(' ')[0]}. Biasanya 24–48 jam.
+            </p>
+          </div>
+        )}
+        {myProfile?.status === 'approved' && (
+          <div className="mb-6 border border-cognac/30 p-4 flex items-center gap-3" style={{ background: 'rgba(196,154,110,0.08)' }}>
+            <span className="text-cognac text-sm">✓</span>
+            <p className="text-cognac/80 text-sm font-sans">
+              Aplikasimu disetujui — selamat datang di Curated, {myProfile.name?.split(' ')[0]}!
+            </p>
+          </div>
+        )}
+        {myProfile?.status === 'rejected' && (
+          <div className="mb-6 border border-espresso-border p-4">
+            <p className="text-cream/30 text-sm font-sans">Aplikasimu tidak lolos seleksi kali ini. Kamu bisa coba lagi nanti.</p>
+          </div>
+        )}
 
         {/* Value prop banner */}
         <div className="mb-8 border border-cognac/20 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"

@@ -313,7 +313,7 @@ export default function Events() {
                       <span className="text-cream/20 text-[10px] font-sans tracking-wide">Termasuk drinks & snacks</span>
                     </div>
                     <a
-                      href="#waitlist"
+                      href="/auth"
                       className={`block text-center w-full py-3 text-xs tracking-[0.15em] uppercase font-sans font-semibold transition-colors ${
                         isSoldOut
                           ? 'border border-espresso-border text-cream/20 pointer-events-none'

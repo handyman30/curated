@@ -49,7 +49,7 @@ export default function Hero() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-start gap-4 mb-16">
-              <a href="#waitlist" className="group inline-flex items-center gap-2.5 bg-cognac text-espresso px-9 py-4 text-xs tracking-[0.15em] uppercase font-sans font-semibold hover:bg-cognac-light transition-all duration-200">
+              <a href="/auth" className="group inline-flex items-center gap-2.5 bg-cognac text-espresso px-9 py-4 text-xs tracking-[0.15em] uppercase font-sans font-semibold hover:bg-cognac-light transition-all duration-200">
                 Join the Waitlist
                 <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
               </a>
@@ -83,7 +83,7 @@ export default function Hero() {
                 </span>
                 <span className="text-cognac text-xs font-sans tracking-wide">3 new matches found</span>
               </div>
-              <a href="#waitlist" className="text-cream/30 text-xs font-sans hover:text-cognac transition-colors">See all →</a>
+              <a href="/auth" className="text-cream/30 text-xs font-sans hover:text-cognac transition-colors">See all →</a>
             </div>
 
             {/* Primary match card */}
@@ -176,7 +176,7 @@ export default function Hero() {
                   {/* Lock overlay */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-espresso/70 backdrop-blur-[1px]">
                     <p className="text-cream/40 text-lg mb-1">🔒</p>
-                    <a href="#waitlist" className="text-cognac/70 text-[10px] font-sans tracking-wide hover:text-cognac transition-colors">
+                    <a href="/auth" className="text-cognac/70 text-[10px] font-sans tracking-wide hover:text-cognac transition-colors">
                       Unlock · $5/mo
                     </a>
                   </div>
@@ -186,7 +186,7 @@ export default function Hero() {
 
             {/* Footer note */}
             <p className="text-center text-cream/20 text-[11px] font-sans tracking-wide">
-              +1 more match waiting · <a href="#waitlist" className="text-cognac/50 hover:text-cognac transition-colors">Join to see yours</a>
+              +1 more match waiting · <a href="/auth" className="text-cognac/50 hover:text-cognac transition-colors">Join to see yours</a>
             </p>
           </div>
 

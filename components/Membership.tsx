@@ -32,7 +32,7 @@ const TIERS = [
       'Akses Instagram & LinkedIn match',
     ],
     cta: 'Daftar Sekarang',
-    href: '#waitlist',
+    href: '/auth',
     inverted: true,
   },
   {
@@ -48,7 +48,7 @@ const TIERS = [
       'Akses acara VIP',
     ],
     cta: 'Hubungi Kami',
-    href: '#waitlist',
+    href: '/auth',
     inverted: false,
   },
 ]

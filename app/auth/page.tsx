@@ -24,7 +24,7 @@ export default function AuthPage() {
       sessionStorage.setItem('curated_email', email)
       // If email confirmation is disabled, session exists immediately → go straight to dashboard
       if (data.session) {
-        router.push('/dashboard')
+        router.push('/apply')
       } else {
         setDone(true)
       }
