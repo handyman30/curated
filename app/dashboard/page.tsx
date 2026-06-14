@@ -151,14 +151,24 @@ export default function Dashboard() {
           </div>
         )}
         {myProfile?.status === 'waitlist' && (
-          <div className="mb-6 border border-espresso-border p-4 flex items-center gap-3" style={{ background: '#1A110C' }}>
-            <span className="relative flex h-2 w-2 flex-shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cognac/60 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-cognac/70" />
-            </span>
-            <p className="text-cream/50 text-sm font-sans">
-              Aplikasimu sedang direview, {myProfile.name?.split(' ')[0]}. Biasanya 24–48 jam.
-            </p>
+          <div className="mb-6 border border-espresso-border p-4 flex items-center justify-between gap-4" style={{ background: '#1A110C' }}>
+            <div className="flex items-center gap-3">
+              <span className="relative flex h-2 w-2 flex-shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cognac/60 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-cognac/70" />
+              </span>
+              <p className="text-cream/50 text-sm font-sans">
+                Aplikasimu sedang direview, {myProfile.name?.split(' ')[0]}. Biasanya 24–48 jam.
+              </p>
+            </div>
+            <a
+              href="https://wa.me/61400403294"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-shrink-0 text-cognac/50 text-xs font-sans hover:text-cognac transition-colors whitespace-nowrap"
+            >
+              Ada pertanyaan? →
+            </a>
           </div>
         )}
         {myProfile?.status === 'approved' && (

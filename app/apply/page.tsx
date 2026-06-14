@@ -112,6 +112,17 @@ export default function ApplyPage() {
             Lihat Profil Member →
           </a>
           <p className="text-cream/20 text-xs font-sans mt-5">Cek inbox (dan folder junk) untuk email konfirmasi.</p>
+          <p className="text-cream/20 text-xs font-sans mt-3">
+            Ada pertanyaan?{' '}
+            <a
+              href="https://wa.me/61400403294"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-cognac/50 hover:text-cognac transition-colors"
+            >
+              WhatsApp kami →
+            </a>
+          </p>
         </div>
       </div>
     )
