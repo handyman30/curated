@@ -12,11 +12,21 @@ export async function POST(req: NextRequest) {
 
   const admin = supabaseAdmin()
 
-  const { error } = await admin.from('profiles').upsert({
+  // Try with auth_user_id first, fall back without it if column doesn't exist yet
+  let { error } = await admin.from('profiles').upsert({
     email, name, age: parseInt(age) || null, gender, occupation, city, goals,
     linkedin: linkedin || null, instagram: instagram || null,
     status: 'waitlist', auth_user_id: auth_user_id || null,
   }, { onConflict: 'email' })
+
+  if (error?.message?.includes('auth_user_id')) {
+    const result = await admin.from('profiles').upsert({
+      email, name, age: parseInt(age) || null, gender, occupation, city, goals,
+      linkedin: linkedin || null, instagram: instagram || null,
+      status: 'waitlist',
+    }, { onConflict: 'email' })
+    error = result.error
+  }
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
