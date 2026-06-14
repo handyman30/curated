@@ -39,6 +39,9 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [userEmail, setUserEmail] = useState<string>('')
   const [myProfile, setMyProfile] = useState<MyProfile>(undefined as unknown as MyProfile)
+  const [activeTab, setActiveTab] = useState<'discover' | 'profile'>('discover')
+  const [profileLikes, setProfileLikes] = useState<Array<{ name: string; occupation: string; age: number; created_at: string }>>([])
+  const [likesLoaded, setLikesLoaded] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -105,6 +108,22 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <a href="/" className="font-serif font-light text-cream text-lg tracking-[0.2em] uppercase">Curated</a>
           <div className="flex items-center gap-3">
+            {/* Browse / My Profile tabs */}
+            <div className="flex items-center gap-1 border border-espresso-border p-1">
+              {(['discover', 'profile'] as const).map((t) => (
+                <button key={t} onClick={() => {
+                  setActiveTab(t)
+                  if (t === 'profile' && !likesLoaded && userEmail) {
+                    fetch('/api/profile-likes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: userEmail }) })
+                      .then(r => r.json()).then(j => { setProfileLikes(j.likes ?? []); setLikesLoaded(true) })
+                  }
+                }}
+                  className={`px-3 py-1 text-xs tracking-[0.1em] uppercase font-sans transition-colors ${activeTab === t ? 'bg-cognac text-espresso' : 'text-cream/40 hover:text-cream'}`}
+                >
+                  {t === 'discover' ? 'Browse' : 'My Profile'}
+                </button>
+              ))}
+            </div>
             <div className="hidden sm:flex items-center gap-1 border border-espresso-border p-1">
               {(['all', 'female', 'male'] as const).map((f) => (
                 <button
@@ -140,6 +159,80 @@ export default function Dashboard() {
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-10">
+
+        {/* Profile tab */}
+        {activeTab === 'profile' && (
+          <div className="max-w-xl mx-auto">
+            {!myProfile ? (
+              <div className="text-center py-20">
+                <p className="font-serif font-light text-cream/30 text-2xl mb-4">Belum ada profil</p>
+                <a href="/apply" className="inline-block bg-cognac text-espresso px-8 py-3 text-xs tracking-[0.15em] uppercase font-sans font-semibold hover:bg-cognac-light transition-colors">
+                  Daftar Waitlist
+                </a>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {/* Profile card */}
+                <div className="border border-espresso-border p-6" style={{ background: '#1A110C' }}>
+                  <div className="flex items-start gap-4 mb-5">
+                    <div className="w-14 h-14 rounded-full bg-cognac/20 flex items-center justify-center font-serif text-2xl text-cognac flex-shrink-0">
+                      {myProfile.name?.[0] ?? '?'}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-1">
+                        <p className="font-serif font-light text-cream text-xl">{myProfile.name}</p>
+                        <span className={`text-[10px] tracking-[0.15em] uppercase font-sans px-2 py-0.5 ${
+                          myProfile.status === 'approved' ? 'bg-cognac/20 text-cognac border border-cognac/30' :
+                          myProfile.status === 'rejected' ? 'bg-red-900/20 text-red-400/60 border border-red-900/30' :
+                          'bg-espresso-border text-cream/30 border border-espresso-border'
+                        }`}>
+                          {myProfile.status === 'approved' ? '✓ Approved' : myProfile.status === 'rejected' ? 'Tidak lolos' : 'Menunggu review'}
+                        </span>
+                      </div>
+                      <p className="text-cognac/60 text-sm font-sans">{myProfile.occupation} · {myProfile.age} tahun</p>
+                    </div>
+                  </div>
+                  {myProfile.status === 'waitlist' && (
+                    <p className="text-cream/30 text-sm font-sans leading-relaxed border-t border-espresso-border pt-4">
+                      Aplikasimu sedang kami review. Biasanya 24–48 jam.{' '}
+                      <a href="https://wa.me/61400403294" target="_blank" rel="noopener noreferrer" className="text-cognac/60 hover:text-cognac transition-colors">
+                        Ada pertanyaan? →
+                      </a>
+                    </p>
+                  )}
+                </div>
+
+                {/* Who liked you */}
+                {myProfile.status === 'approved' && (
+                  <div className="border border-espresso-border p-6" style={{ background: '#1A110C' }}>
+                    <p className="text-cream/25 text-[10px] tracking-[0.2em] uppercase font-sans mb-4">
+                      Yang tertarik denganmu ({profileLikes.length})
+                    </p>
+                    {profileLikes.length === 0 ? (
+                      <p className="text-cream/20 text-sm font-sans">Belum ada yang tertarik. Share profilmu!</p>
+                    ) : (
+                      <div className="space-y-3">
+                        {profileLikes.map((l, i) => (
+                          <div key={i} className="flex items-center gap-3 border-b border-espresso-border pb-3 last:border-0 last:pb-0">
+                            <div className="w-9 h-9 rounded-full bg-cognac/20 flex items-center justify-center font-serif text-sm text-cognac flex-shrink-0">
+                              {l.name?.[0] ?? '?'}
+                            </div>
+                            <div>
+                              <p className="text-cream/70 text-sm font-sans">{l.name}</p>
+                              <p className="text-cream/30 text-xs font-sans">{l.occupation}{l.age ? ` · ${l.age} tahun` : ''}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'discover' && <>
 
         {/* My application status */}
         {myProfile === null && userEmail && (
@@ -312,6 +405,8 @@ export default function Dashboard() {
             })}
           </div>
         )}
+
+        </>}
       </main>
     </div>
   )

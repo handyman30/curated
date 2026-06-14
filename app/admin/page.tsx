@@ -1,6 +1,8 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+
+type LikeRow = { from_email: string; from_name: string; liked_profile: string; created_at: string }
 
 type Applicant = {
   id: string
@@ -22,7 +24,8 @@ export default function AdminPage() {
   const [password, setPassword] = useState('')
   const [applicants, setApplicants] = useState<Applicant[]>([])
   const [loading, setLoading] = useState(false)
-  const [tab, setTab] = useState<'waitlist' | 'approved' | 'rejected' | 'events'>('waitlist')
+  const [tab, setTab] = useState<'waitlist' | 'approved' | 'rejected' | 'events' | 'interests'>('waitlist')
+  const [likes, setLikes] = useState<LikeRow[]>([])
 
   const demoEvents = useMemo(() => {
     const d = new Date()
@@ -63,13 +66,14 @@ export default function AdminPage() {
 
   async function load(pwd = password) {
     setLoading(true)
-    const res = await fetch('/api/admin-profiles', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: pwd }),
-    })
-    const json = await res.json()
-    setApplicants(json.data ?? [])
+    const [profilesRes, likesRes] = await Promise.all([
+      fetch('/api/admin-profiles', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pwd }) }),
+      fetch('/api/admin-likes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pwd }) }),
+    ])
+    const profilesJson = await profilesRes.json()
+    const likesJson = await likesRes.json()
+    setApplicants(profilesJson.data ?? [])
+    setLikes(likesJson.data ?? [])
     setLoading(false)
   }
 
@@ -148,6 +152,14 @@ export default function AdminPage() {
             >
               Events ({demoEvents.length})
             </button>
+            <button
+              onClick={() => setTab('interests')}
+              className={`px-3 py-1 text-xs tracking-[0.1em] uppercase font-sans capitalize transition-colors ${
+                tab === 'interests' ? 'bg-cognac text-espresso' : 'text-cream/40 hover:text-cream'
+              }`}
+            >
+              Interests ({likes.length})
+            </button>
           </div>
         </div>
       </header>
@@ -202,6 +214,28 @@ export default function AdminPage() {
                 </div>
               </div>
             ))}
+          </div>
+        ) : tab === 'interests' ? (
+          <div>
+            {likes.length === 0 ? (
+              <p className="text-center text-cream/30 py-20 font-sans text-sm">No interests yet</p>
+            ) : (
+              <div className="space-y-2">
+                {likes.map((l, i) => (
+                  <div key={i} className="border border-espresso-border p-4 flex items-center justify-between" style={{ background: '#1A110C' }}>
+                    <div>
+                      <p className="text-cream/80 font-sans text-sm">
+                        <span className="text-cognac">{l.from_name}</span>
+                        <span className="text-cream/40"> tertarik dengan </span>
+                        <span className="text-cream">{l.liked_profile}</span>
+                      </p>
+                      <p className="text-cream/30 text-xs font-sans mt-0.5">{l.from_email}</p>
+                    </div>
+                    <p className="text-cream/20 text-xs font-sans">{new Date(l.created_at).toLocaleDateString('id-ID')}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         ) : loading ? (
           <div className="flex justify-center py-20">
