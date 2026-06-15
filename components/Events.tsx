@@ -12,20 +12,12 @@ const RECENT_JOINS = [
   { initial: 'N', name: 'Nadia K.', time: 'kemarin' },
 ]
 
-// Seeded signup counts per venue index so they look consistent
+// Fallback seed counts shown before DB loads
 const SEED_SIGNUPS = [
-  { men: 2, women: 1 },
-  { men: 1, women: 2 },
+  { men: 0, women: 0 },
+  { men: 0, women: 0 },
   { men: 0, women: 0 },
 ]
-
-const SEED_ATTENDEES: Record<string, Array<{ initial: string; name: string; gender: 'male' | 'female' }>> = {
-  'evt-0': [
-    { initial: 'D', name: 'Dian R.', gender: 'male' },
-    { initial: 'J', name: 'Jennifer C.', gender: 'female' },
-    { initial: 'H', name: 'Handy H.', gender: 'male' },
-  ],
-}
 
 function addMinutes(time: string, mins: number): string {
   const [h, m] = time.split(':').map(Number)
@@ -48,8 +40,18 @@ export default function Events() {
   const [userProfile, setUserProfile] = useState<{ name?: string; gender?: string; age?: number; status?: string; phone?: string } | null>(null)
   const [showPhoneForm, setShowPhoneForm] = useState<string | null>(null)
   const [phoneInput, setPhoneInput] = useState<Record<string, string>>({})
+  const [liveCounts, setLiveCounts] = useState<Record<string, { men: number; women: number }>>({})
+  const [liveAttendees, setLiveAttendees] = useState<Record<string, Array<{ initial: string; name: string; gender: string; photo_url?: string }>>>({})
 
   useEffect(() => {
+    // Fetch live signup counts from DB
+    fetch('/api/event-counts')
+      .then(r => r.json())
+      .then(j => {
+        if (j.counts) setLiveCounts(j.counts)
+        if (j.attendees) setLiveAttendees(j.attendees)
+      })
+
     import('@/lib/supabase').then(({ supabase }) => {
       supabase.auth.getSession().then(({ data }) => {
         const email = data.session?.user?.email || sessionStorage.getItem('curated_email') || ''
@@ -131,13 +133,16 @@ export default function Events() {
   }
 
   const events = useMemo(() => {
-    return getUpcomingEvents().map((ev, i) => ({
-      ...ev,
-      signups_men: SEED_SIGNUPS[i]?.men ?? 0,
-      signups_women: SEED_SIGNUPS[i]?.women ?? 0,
-      price_idr: 175000,
-    }))
-  }, [])
+    return getUpcomingEvents().map((ev, i) => {
+      const live = liveCounts[ev.id]
+      return {
+        ...ev,
+        signups_men: live?.men ?? SEED_SIGNUPS[i]?.men ?? 0,
+        signups_women: live?.women ?? SEED_SIGNUPS[i]?.women ?? 0,
+        price_idr: 175000,
+      }
+    })
+  }, [liveCounts])
 
   return (
     <section id="events" className="py-20 md:py-28 border-t border-espresso-border" style={{ background: 'linear-gradient(180deg, #1A110C 0%, #0E0907 100%)' }}>
@@ -283,7 +288,7 @@ export default function Events() {
                     })}
                   </div>
 
-                  {SEED_ATTENDEES[ev.id] && (
+                  {liveAttendees[ev.id]?.length > 0 && (
                     <div className="mb-5 pt-4 border-t border-espresso-border">
                       <button
                         onClick={() => setExpandedEvent(expandedEvent === ev.id ? null : ev.id)}
@@ -291,23 +296,19 @@ export default function Events() {
                       >
                         <div className="flex items-center gap-2.5">
                           <div className="flex -space-x-1.5">
-                            {SEED_ATTENDEES[ev.id].map((a) => (
+                            {liveAttendees[ev.id].slice(0, 4).map((a) => (
                               <div
                                 key={a.name}
-                                className="w-6 h-6 rounded-full border-2 border-espresso-light bg-cognac/25 flex items-center justify-center font-serif text-[10px] text-cognac overflow-hidden"
+                                className="w-6 h-6 rounded-full border-2 border-espresso-light bg-cognac/25 flex items-center justify-center font-serif text-[10px] text-cognac overflow-hidden flex-shrink-0"
                               >
-                                <img
-                                  src={`/profiles/${a.name.split(' ')[0].toLowerCase()}.jpg`}
-                                  alt={a.name}
-                                  className="w-full h-full object-cover"
-                                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display='none' }}
-                                />
-                                <span className="absolute font-serif text-[10px] text-cognac">{a.initial}</span>
+                                {a.photo_url
+                                  ? <img src={a.photo_url} alt={a.name} className="w-full h-full object-cover" />
+                                  : a.initial}
                               </div>
                             ))}
                           </div>
                           <span className="text-cognac/70 text-xs font-sans tracking-wide group-hover:text-cognac transition-colors">
-                            Siapa yang ikut ({SEED_ATTENDEES[ev.id].length}) →
+                            Siapa yang ikut ({liveAttendees[ev.id].length}) →
                           </span>
                         </div>
                         <span className={`text-cognac/40 text-xs transition-transform duration-200 ${expandedEvent === ev.id ? 'rotate-180' : ''}`}>▾</span>
@@ -315,20 +316,12 @@ export default function Events() {
 
                       {expandedEvent === ev.id && (
                         <div className="mt-3 space-y-2">
-                          {SEED_ATTENDEES[ev.id].map((a) => (
+                          {liveAttendees[ev.id].map((a) => (
                             <div key={a.name} className="flex items-center gap-2.5">
-                              <div className="w-8 h-8 rounded-full bg-cognac/20 flex items-center justify-center font-serif text-xs text-cognac overflow-hidden flex-shrink-0 border border-cognac/20">
-                                <img
-                                  src={`/profiles/${a.name.split(' ')[0].toLowerCase()}.jpg`}
-                                  alt={a.name}
-                                  className="w-full h-full object-cover"
-                                  onError={(e) => {
-                                    const el = e.currentTarget
-                                    el.style.display = 'none'
-                                    el.parentElement!.querySelector('span')?.removeAttribute('style')
-                                  }}
-                                />
-                                <span style={{ display: 'none' }} className="font-serif text-xs text-cognac">{a.initial}</span>
+                              <div className="w-8 h-8 rounded-full bg-cognac/20 flex items-center justify-center font-serif text-xs text-cognac flex-shrink-0 border border-cognac/20 overflow-hidden">
+                                {a.photo_url
+                                  ? <img src={a.photo_url} alt={a.name} className="w-full h-full object-cover" />
+                                  : a.initial}
                               </div>
                               <div>
                                 <p className="text-cream/70 text-xs font-sans">{a.name}</p>
