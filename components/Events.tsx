@@ -45,7 +45,7 @@ export default function Events() {
   const [signupError, setSignupError] = useState<string>('')
   const [signupSuccess, setSignupSuccess] = useState<string | null>(null)
   const [userEmail, setUserEmail] = useState<string>('')
-  const [userProfile, setUserProfile] = useState<{ name?: string; gender?: string; age?: number; status?: string } | null>(null)
+  const [userProfile, setUserProfile] = useState<{ name?: string; gender?: string; age?: number; status?: string; phone?: string } | null>(null)
   const [showPhoneForm, setShowPhoneForm] = useState<string | null>(null)
   const [phoneInput, setPhoneInput] = useState<Record<string, string>>({})
 
@@ -83,7 +83,12 @@ export default function Events() {
       setTimeout(() => setSignupError(''), 5000)
       return
     }
-    setShowPhoneForm(ev.id)
+    // If we already have their phone from registration, skip the phone form
+    if (userProfile.phone) {
+      submitSignupWithPhone(ev, userProfile.phone)
+    } else {
+      setShowPhoneForm(ev.id)
+    }
   }
 
   async function submitSignup(ev: { id: string; name: string; date: Date; dateStr: string }) {
@@ -92,6 +97,10 @@ export default function Events() {
       setSignupError('Masukkan nomor WhatsApp dulu ya.')
       return
     }
+    await submitSignupWithPhone(ev, phone.trim())
+  }
+
+  async function submitSignupWithPhone(ev: { id: string; name: string; date: Date; dateStr: string }, phone: string) {
     setSigningUp(ev.id)
     setSignupError('')
     setSignupSuccess(null)
@@ -106,7 +115,7 @@ export default function Events() {
         gender: userProfile?.gender ?? '',
         age: userProfile?.age ?? null,
         name: userProfile?.name ?? '',
-        phone: phone.trim(),
+        phone,
       }),
     })
     if (res.ok) {

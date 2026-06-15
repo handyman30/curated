@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
   const occupation = get('occupation')
   const city = get('city')
   const goals = get('goals')
+  const phone = get('phone')
   const linkedin = get('linkedin')
   const instagram = get('instagram')
   const auth_user_id = get('auth_user_id')
@@ -47,6 +48,7 @@ export async function POST(req: NextRequest) {
   // Try with auth_user_id first, fall back without it if column doesn't exist yet
   let { error } = await admin.from('profiles').upsert({
     email, name, age: parseInt(age) || null, gender, occupation, city, goals,
+    phone: phone || null,
     linkedin: linkedin || null, instagram: instagram || null,
     photo_url,
     status: 'waitlist', auth_user_id: auth_user_id || null,
@@ -55,6 +57,7 @@ export async function POST(req: NextRequest) {
   if (error?.message?.includes('auth_user_id')) {
     const result = await admin.from('profiles').upsert({
       email, name, age: parseInt(age) || null, gender, occupation, city, goals,
+      phone: phone || null,
       linkedin: linkedin || null, instagram: instagram || null,
       photo_url,
       status: 'waitlist',

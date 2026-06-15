@@ -213,7 +213,7 @@ export default function AdminPage() {
                             </div>
                             <div>
                               <p className="text-cream/80 font-sans text-sm">{s.name}</p>
-                              <p className="text-cream/30 text-xs font-sans capitalize">{s.gender === 'male' ? 'Pria' : 'Wanita'} · {s.age} tahun · {s.email}</p>
+                              <p className="text-cream/30 text-xs font-sans capitalize">{s.gender === 'male' ? 'Pria' : 'Wanita'} · {s.age} tahun · {s.email}{s.phone ? ` · ${s.phone}` : ''}</p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2 flex-shrink-0">

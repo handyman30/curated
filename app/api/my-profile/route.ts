@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   const admin = supabaseAdmin()
   const { data } = await admin
     .from('profiles')
-    .select('id, name, age, gender, occupation, city, status, created_at')
+    .select('id, name, age, gender, occupation, city, status, phone, created_at')
     .eq('email', email)
     .single()
 

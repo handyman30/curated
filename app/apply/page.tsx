@@ -8,6 +8,7 @@ type FormData = {
   name: string
   age: string
   gender: string
+  phone: string
   occupation: string
   city: string
   goals: string
@@ -16,7 +17,7 @@ type FormData = {
 }
 
 const EMPTY: FormData = {
-  name: '', age: '', gender: '',
+  name: '', age: '', gender: '', phone: '',
   occupation: '', city: '', goals: '', linkedin: '', instagram: '',
 }
 
@@ -228,6 +229,12 @@ export default function ApplyPage() {
             </div>
           </div>
 
+          {/* Phone */}
+          <div>
+            <label className={labelClass}>Nomor WhatsApp <span className="text-cream/20">*</span></label>
+            <input type="tel" name="phone" required value={form.phone} onChange={handleChange} placeholder="08xx xxxx xxxx" className={inputClass} />
+          </div>
+
           {/* Occupation + City */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
@@ -274,7 +281,7 @@ export default function ApplyPage() {
 
           <button
             type="submit"
-            disabled={loading || !form.gender || !form.name || !form.age || !form.occupation || !form.city || !form.goals}
+            disabled={loading || !form.gender || !form.name || !form.age || !form.phone || !form.occupation || !form.city || !form.goals}
             className="w-full bg-cognac text-espresso py-4 text-xs tracking-[0.15em] uppercase font-sans font-semibold hover:bg-cognac-light transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {loading ? (
