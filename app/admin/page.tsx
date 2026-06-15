@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { getUpcomingEvents } from '@/lib/events-config'
 
 type LikeRow = { from_email: string; from_name: string; liked_profile: string; created_at: string }
 
@@ -28,6 +29,8 @@ export default function AdminPage() {
   const [likes, setLikes] = useState<LikeRow[]>([])
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [eventSignups, setEventSignups] = useState<any[]>([])
+
+  const baseEvents = useMemo(() => getUpcomingEvents(), [])
 
   async function login(e: React.FormEvent) {
     e.preventDefault()
@@ -151,7 +154,7 @@ export default function AdminPage() {
                 tab === 'events' ? 'bg-cognac text-espresso' : 'text-cream/40 hover:text-cream'
               }`}
             >
-              Events ({eventSignups.length})
+              Events ({baseEvents.length})
             </button>
             <button
               onClick={() => setTab('interests')}
@@ -168,40 +171,40 @@ export default function AdminPage() {
       <main className="max-w-7xl mx-auto px-6 py-10">
         {tab === 'events' ? (
           <div className="space-y-6">
-            {eventSignups.length === 0 ? (
-              <p className="text-center text-cream/30 py-20 font-sans text-sm">No event signups yet</p>
-            ) : (() => {
-              // Group by event_id
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const groups: Record<string, any[]> = {}
-              for (const s of eventSignups) {
-                if (!groups[s.event_id]) groups[s.event_id] = []
-                groups[s.event_id].push(s)
-              }
-              return Object.entries(groups).map(([eventId, signups]) => {
-                const first = signups[0]
-                const approved = signups.filter((s) => s.status === 'approved').length
-                const pending = signups.filter((s) => s.status === 'pending').length
-                return (
-                  <div key={eventId} className="border border-espresso-border p-6" style={{ background: '#1A110C' }}>
-                    <div className="flex items-start justify-between mb-5">
-                      <div>
-                        <p className="text-cream font-serif font-light text-xl mb-1">{first.event_name || eventId}</p>
-                        <p className="text-cognac/60 text-xs font-sans mt-1">{first.event_date}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        {pending > 0 && (
-                          <div className="border border-amber-500/30 px-3 py-1">
-                            <span className="text-amber-400/70 text-xs font-sans tracking-wide">{pending} pending</span>
-                          </div>
-                        )}
-                        <div className="border border-cognac/30 px-3 py-1">
-                          <span className="text-cognac text-xs font-sans tracking-wide">{signups.length} daftar · {approved} disetujui</span>
+            {baseEvents.map((ev) => {
+              const signups = eventSignups.filter((s) => s.event_id === ev.id)
+              const approved = signups.filter((s) => s.status === 'approved').length
+              const pending = signups.filter((s) => s.status === 'pending').length
+              const menCount = signups.filter((s) => s.gender === 'male').length
+              const womenCount = signups.filter((s) => s.gender === 'female').length
+              return (
+                <div key={ev.id} className="border border-espresso-border p-6" style={{ background: '#1A110C' }}>
+                  <div className="flex items-start justify-between mb-5">
+                    <div>
+                      <p className="text-cream font-serif font-light text-xl mb-1">{ev.name}</p>
+                      <p className="text-cream/40 text-xs font-sans">{ev.address}</p>
+                      <p className="text-cognac/60 text-xs font-sans mt-1">{ev.dateStr} · {ev.time} WIB</p>
+                    </div>
+                    <div className="flex gap-2 flex-wrap justify-end">
+                      {pending > 0 && (
+                        <div className="border border-amber-500/30 px-3 py-1">
+                          <span className="text-amber-400/70 text-xs font-sans tracking-wide">{pending} pending</span>
                         </div>
+                      )}
+                      <div className="border border-cognac/30 px-3 py-1">
+                        <span className="text-cognac text-xs font-sans tracking-wide">
+                          {signups.length}/{ev.capacity * 2} · {menCount}P {womenCount}W · {approved} approved
+                        </span>
                       </div>
                     </div>
-                    <p className="text-cream/30 text-[10px] tracking-[0.2em] uppercase font-sans mb-3">Peserta</p>
-                    <div className="space-y-2">
+                  </div>
+
+                  <p className="text-cream/30 text-[10px] tracking-[0.2em] uppercase font-sans mb-3">Peserta</p>
+
+                  {signups.length === 0 ? (
+                    <p className="text-cream/20 text-xs font-sans py-4">Belum ada yang daftar.</p>
+                  ) : (
+                    <div className="space-y-2 mb-3">
                       {signups.map((s) => (
                         <div key={s.id} className="flex items-center justify-between border border-espresso-border/60 p-3" style={{ background: '#0E0907' }}>
                           <div className="flex items-center gap-3">
@@ -210,36 +213,36 @@ export default function AdminPage() {
                             </div>
                             <div>
                               <p className="text-cream/80 font-sans text-sm">{s.name}</p>
-                              <p className="text-cream/30 text-xs font-sans capitalize">{s.gender} · {s.age} tahun · {s.email}</p>
+                              <p className="text-cream/30 text-xs font-sans capitalize">{s.gender === 'male' ? 'Pria' : 'Wanita'} · {s.age} tahun · {s.email}</p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2 flex-shrink-0">
                             {s.status === 'pending' && (
                               <>
-                                <button
-                                  onClick={() => approveEventSignup(s.id)}
-                                  className="bg-cognac text-espresso px-3 py-1.5 text-xs tracking-[0.1em] uppercase font-sans font-semibold hover:bg-cognac-light transition-colors"
-                                >
-                                  Approve
-                                </button>
-                                <button
-                                  onClick={() => rejectEventSignup(s.id)}
-                                  className="border border-espresso-border text-cream/40 px-3 py-1.5 text-xs tracking-[0.1em] uppercase font-sans hover:text-cream/60 transition-all"
-                                >
-                                  Reject
-                                </button>
+                                <button onClick={() => approveEventSignup(s.id)} className="bg-cognac text-espresso px-3 py-1.5 text-xs tracking-[0.1em] uppercase font-sans font-semibold hover:bg-cognac-light transition-colors">Approve</button>
+                                <button onClick={() => rejectEventSignup(s.id)} className="border border-espresso-border text-cream/40 px-3 py-1.5 text-xs tracking-[0.1em] uppercase font-sans hover:text-cream/60 transition-all">Reject</button>
                               </>
                             )}
-                            {s.status === 'approved' && <span className="text-cognac text-xs font-sans tracking-wide">✓ Disetujui</span>}
-                            {s.status === 'rejected' && <span className="text-cream/30 text-xs font-sans tracking-wide">Ditolak</span>}
+                            {s.status === 'approved' && <span className="text-cognac text-xs font-sans">✓ Disetujui</span>}
+                            {s.status === 'rejected' && <span className="text-cream/30 text-xs font-sans">Ditolak</span>}
                           </div>
                         </div>
                       ))}
                     </div>
+                  )}
+
+                  {/* Empty slots */}
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    {Array.from({ length: Math.max(0, ev.capacity * 2 - signups.length) }).map((_, i) => (
+                      <div key={i} className="border border-espresso-border/30 border-dashed p-2 flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-full border border-espresso-border/40 border-dashed flex-shrink-0" />
+                        <p className="text-cream/15 text-xs font-sans">Slot tersedia</p>
+                      </div>
+                    ))}
                   </div>
-                )
-              })
-            })()}
+                </div>
+              )
+            })}
           </div>
         ) : tab === 'interests' ? (
           <div>

@@ -85,25 +85,13 @@ export default function ApplyPage() {
     setError('')
     setLoading(true)
     try {
-      let photoUrl = ''
-      if (photoFile) {
-        const ext = photoFile.name.split('.').pop() || 'jpg'
-        const path = `${authUserId}.${ext}`
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('profile-photos')
-          .upload(path, photoFile, { contentType: photoFile.type, upsert: true })
-        if (!uploadError && uploadData) {
-          const { data: urlData } = supabase.storage
-            .from('profile-photos')
-            .getPublicUrl(uploadData.path)
-          photoUrl = urlData.publicUrl
-        }
-      }
+      const fd = new FormData()
+      Object.entries({ ...form, email, auth_user_id: authUserId }).forEach(([k, v]) => fd.append(k, v))
+      if (photoFile) fd.append('photo', photoFile)
 
       const res = await fetch('/api/apply', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, email, auth_user_id: authUserId, photo_url: photoUrl || undefined }),
+        body: fd,
       })
       if (!res.ok) {
         const j = await res.json()

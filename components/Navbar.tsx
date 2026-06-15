@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase'
 
 const NAV_LINKS = [
   { label: 'Events', href: '#events' },
@@ -11,11 +12,23 @@ const NAV_LINKS = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [loggedIn, setLoggedIn] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+
+    supabase.auth.getSession().then(({ data }) => {
+      setLoggedIn(!!data.session)
+    })
+    const { data: listener } = supabase.auth.onAuthStateChange((_e, session) => {
+      setLoggedIn(!!session)
+    })
+
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      listener.subscription.unsubscribe()
+    }
   }, [])
 
   return (
@@ -44,18 +57,29 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-4">
-          <a
-            href="/auth"
-            className="text-cream/40 hover:text-cream text-xs tracking-[0.15em] uppercase font-sans transition-colors duration-200 hidden md:block"
-          >
-            Log in
-          </a>
-          <a
-            href="/join"
-            className="border border-cognac/50 text-cognac text-xs tracking-[0.15em] uppercase px-5 py-2.5 font-sans hover:bg-cognac hover:text-espresso transition-all duration-200"
-          >
-            Apply
-          </a>
+          {loggedIn ? (
+            <a
+              href="/dashboard"
+              className="text-cognac/70 hover:text-cognac text-xs tracking-[0.15em] uppercase font-sans transition-colors duration-200 hidden md:block"
+            >
+              Dashboard →
+            </a>
+          ) : (
+            <>
+              <a
+                href="/auth"
+                className="text-cream/40 hover:text-cream text-xs tracking-[0.15em] uppercase font-sans transition-colors duration-200 hidden md:block"
+              >
+                Log in
+              </a>
+              <a
+                href="/join"
+                className="border border-cognac/50 text-cognac text-xs tracking-[0.15em] uppercase px-5 py-2.5 font-sans hover:bg-cognac hover:text-espresso transition-all duration-200"
+              >
+                Apply
+              </a>
+            </>
+          )}
 
           <button
             className="md:hidden flex flex-col gap-1.5 p-1"
@@ -81,9 +105,15 @@ export default function Navbar() {
               {link.label}
             </a>
           ))}
-          <a href="/auth" onClick={() => setMenuOpen(false)} className="text-cream/60 text-sm tracking-[0.15em] uppercase font-sans hover:text-cream transition-colors">
-            Log in
-          </a>
+          {loggedIn ? (
+            <a href="/dashboard" onClick={() => setMenuOpen(false)} className="text-cognac/80 text-sm tracking-[0.15em] uppercase font-sans hover:text-cognac transition-colors">
+              Dashboard →
+            </a>
+          ) : (
+            <a href="/auth" onClick={() => setMenuOpen(false)} className="text-cream/60 text-sm tracking-[0.15em] uppercase font-sans hover:text-cream transition-colors">
+              Log in
+            </a>
+          )}
         </div>
       </div>
     </nav>

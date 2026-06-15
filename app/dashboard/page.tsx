@@ -278,6 +278,25 @@ export default function Dashboard() {
           </div>
         )}
 
+        {/* Not logged in banner */}
+        {!userEmail && (
+          <div className="mb-6 border border-cognac/25 p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+            style={{ background: 'rgba(196,154,110,0.05)' }}>
+            <div>
+              <p className="text-cream/80 text-sm font-sans font-medium mb-1">Masuk untuk akses penuh</p>
+              <p className="text-cream/40 text-xs font-sans">Browse semua member, daftar event, dan lihat siapa yang tertarik denganmu.</p>
+            </div>
+            <div className="flex gap-3 flex-shrink-0">
+              <a href="/auth" className="bg-cognac text-espresso text-xs tracking-[0.15em] uppercase font-sans font-semibold px-5 py-2.5 hover:bg-cognac-light transition-colors">
+                Log In
+              </a>
+              <a href="/join" className="border border-cognac/40 text-cognac text-xs tracking-[0.15em] uppercase font-sans px-5 py-2.5 hover:bg-cognac/10 transition-colors">
+                Apply
+              </a>
+            </div>
+          </div>
+        )}
+
         {/* Value prop banner */}
         <div className="mb-8 border border-cognac/20 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
           style={{ background: 'linear-gradient(90deg, rgba(196,154,110,0.06), transparent)' }}>
@@ -289,11 +308,11 @@ export default function Dashboard() {
             <p className="text-cream/70 text-sm font-sans">
               <span className="text-cognac font-medium">{filtered.length} {filtered.length === 1 ? 'person' : 'people'}</span>
               {filtered.length === 0
-                ? ' — more joining soon. You\'ll be notified when there\'s a match.'
-                : ' on Curated. We only charge when both sides say yes.'}
+                ? ' — more joining soon.'
+                : ' on Curated. Contact details revealed after mutual interest.'}
             </p>
           </div>
-          <p className="text-cream/25 text-xs font-sans hidden md:block">No ghosting. Mutual interest confirmed first.</p>
+          <p className="text-cream/25 text-xs font-sans hidden md:block">Private introductions only.</p>
         </div>
 
         {/* Empty state */}

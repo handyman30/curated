@@ -2,14 +2,7 @@
 
 import { useMemo, useState, useEffect } from 'react'
 import { useScrollAnimation } from '@/hooks/useScrollAnimation'
-
-const VENUES = [
-  { name: 'Monolog', address: 'Plaza Senayan, Jakarta Selatan', time: '12:00', type: 'Coffee Morning' },
-  { name: 'Tanamera Coffee', address: 'Jl. Wolter Monginsidi, Senopati', time: '10:30', type: 'Specialty Coffee' },
-  { name: 'Common Grounds', address: 'Jl. Kemang Raya 72, Jakarta Selatan', time: '10:00', type: 'Brunch & Coffee' },
-  { name: 'Kopi Tuku', address: 'Jl. Cipete Raya, Jakarta Selatan', time: '09:30', type: 'Morning Coffee' },
-  { name: 'Simetri Coffee', address: 'Jl. Kemang Selatan, Jakarta Selatan', time: '10:00', type: 'Coffee & Chat' },
-]
+import { getUpcomingEvents } from '@/lib/events-config'
 
 const RECENT_JOINS = [
   { initial: 'A', name: 'Anindya R.', time: '2j lalu' },
@@ -34,35 +27,12 @@ const SEED_ATTENDEES: Record<string, Array<{ initial: string; name: string; gend
   ],
 }
 
-function nextSaturdays(count: number): Date[] {
-  const result: Date[] = []
-  const d = new Date()
-  // Start from tomorrow to avoid today
-  d.setDate(d.getDate() + 1)
-  while (result.length < count) {
-    if (d.getDay() === 6) result.push(new Date(d))
-    d.setDate(d.getDate() + 1)
-  }
-  return result
-}
-
 function addMinutes(time: string, mins: number): string {
   const [h, m] = time.split(':').map(Number)
   const total = h * 60 + m + mins
   const hh = Math.floor(total / 60) % 24
   const mm = total % 60
   return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`
-}
-
-function fmt(date: Date, time: string) {
-  const [h, m] = time.split(':').map(Number)
-  const d = new Date(date)
-  d.setHours(h, m, 0, 0)
-  return d
-}
-
-function formatDay(d: Date) {
-  return d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 function slotsLeft(cap: number, filled: number) { return cap - filled }
@@ -72,21 +42,20 @@ export default function Events() {
   const [expandedEvent, setExpandedEvent] = useState<string | null>(null)
   const [signedUpEvents, setSignedUpEvents] = useState<Set<string>>(new Set())
   const [signingUp, setSigningUp] = useState<string | null>(null)
+  const [signupError, setSignupError] = useState<string>('')
+  const [signupSuccess, setSignupSuccess] = useState<string | null>(null)
   const [userEmail, setUserEmail] = useState<string>('')
-  const [userProfile, setUserProfile] = useState<{ name?: string; gender?: string; age?: number } | null>(null)
+  const [userProfile, setUserProfile] = useState<{ name?: string; gender?: string; age?: number; status?: string } | null>(null)
 
   useEffect(() => {
-    // Dynamically import supabase only client-side
     import('@/lib/supabase').then(({ supabase }) => {
       supabase.auth.getSession().then(({ data }) => {
         const email = data.session?.user?.email || sessionStorage.getItem('curated_email') || ''
         if (!email) return
         setUserEmail(email)
-        // Fetch which events they've signed up for
         fetch(`/api/event-join?email=${encodeURIComponent(email)}`)
           .then(r => r.json())
           .then(j => setSignedUpEvents(new Set(j.signups ?? [])))
-        // Fetch their profile for gender/age
         fetch('/api/my-profile', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) })
           .then(r => r.json())
           .then(j => { if (j.profile) setUserProfile(j.profile) })
@@ -94,9 +63,32 @@ export default function Events() {
     })
   }, [])
 
-  async function handleSignup(ev: { id: string; name: string; date: Date }) {
-    if (!userEmail) { window.location.href = '/auth'; return }
+  async function handleSignup(ev: { id: string; name: string; date: Date; dateStr: string }) {
+    if (!userEmail) { window.location.href = '/join'; return }
+
+    if (!userProfile) {
+      window.location.href = '/apply'
+      return
+    }
+    if (userProfile.status === 'waitlist') {
+      setSignupError('Aplikasimu masih dalam review. Kami akan kabari setelah disetujui.')
+      setTimeout(() => setSignupError(''), 5000)
+      return
+    }
+    if (userProfile.status === 'rejected') {
+      setSignupError('Aplikasimu tidak lolos seleksi ini.')
+      setTimeout(() => setSignupError(''), 5000)
+      return
+    }
+    if (userProfile.status !== 'approved') {
+      setSignupError('Kamu perlu disetujui Curated sebelum bisa daftar event.')
+      setTimeout(() => setSignupError(''), 5000)
+      return
+    }
+
     setSigningUp(ev.id)
+    setSignupError('')
+    setSignupSuccess(null)
     const res = await fetch('/api/event-join', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -104,34 +96,30 @@ export default function Events() {
         email: userEmail,
         event_id: ev.id,
         event_name: ev.name,
-        event_date: formatDay(ev.date),
+        event_date: ev.dateStr,
         gender: userProfile?.gender ?? '',
         age: userProfile?.age ?? null,
         name: userProfile?.name ?? '',
       }),
     })
-    if (res.ok) setSignedUpEvents(prev => new Set([...prev, ev.id]))
+    if (res.ok) {
+      setSignedUpEvents(prev => new Set([...prev, ev.id]))
+      setSignupSuccess(ev.id)
+    } else {
+      const j = await res.json().catch(() => ({}))
+      setSignupError(j.error ?? 'Gagal daftar — coba lagi')
+      setTimeout(() => setSignupError(''), 8000)
+    }
     setSigningUp(null)
   }
 
   const events = useMemo(() => {
-    const saturdays = nextSaturdays(3)
-    return saturdays.map((sat, i) => {
-      const venue = VENUES[i % VENUES.length]
-      const signups = SEED_SIGNUPS[i]
-      return {
-        id: `evt-${i}`,
-        name: venue.name,
-        address: venue.address,
-        time: venue.time,
-        type: venue.type,
-        date: fmt(sat, venue.time),
-        capacity: 3,
-        signups_men: signups.men,
-        signups_women: signups.women,
-        price_idr: 175000,
-      }
-    })
+    return getUpcomingEvents().map((ev, i) => ({
+      ...ev,
+      signups_men: SEED_SIGNUPS[i]?.men ?? 0,
+      signups_women: SEED_SIGNUPS[i]?.women ?? 0,
+      price_idr: 175000,
+    }))
   }, [])
 
   return (
@@ -157,7 +145,6 @@ export default function Events() {
             Setiap Sabtu kami host pertemuan kecil di Jakarta. Kami yang pilih tempatnya, kami yang kurasi tamunya.
             Kamu tinggal datang.
           </p>
-          {/* What's included */}
           <div className="flex flex-wrap gap-2">
             {['Welcome drinks', 'Snacks & fries', 'MC host', 'Kahoot & card games', 'Drawing game'].map((item) => (
               <span key={item} className="text-[11px] font-sans text-cognac/70 border border-cognac/20 px-3 py-1 tracking-wide">
@@ -209,7 +196,6 @@ export default function Events() {
               >
                 <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent to-transparent ${isSoldOut ? 'via-espresso-border' : 'via-cognac/40'}`} />
 
-                {/* Almost full badge */}
                 {isAlmostFull && (
                   <div className="absolute top-4 right-4 bg-cognac/15 border border-cognac/30 px-2 py-1">
                     <span className="text-cognac text-[9px] tracking-[0.2em] uppercase font-sans">{totalLeft} slot tersisa</span>
@@ -222,32 +208,28 @@ export default function Events() {
                 )}
 
                 <div className="p-6 flex flex-col flex-1">
-                  {/* Date & type */}
                   <div className="mb-4">
-                    <p className="text-cognac text-xs tracking-[0.15em] uppercase font-sans mb-1">{formatDay(ev.date)}</p>
+                    <p className="text-cognac text-xs tracking-[0.15em] uppercase font-sans mb-1">{ev.dateStr}</p>
                     <p className="text-cream/30 text-xs font-sans">{ev.time} WIB · {ev.type}</p>
                   </div>
 
-                  {/* Age badge */}
                   <div className="inline-flex items-center gap-2 border border-cognac/30 px-3 py-1 mb-4 w-fit">
                     <span className="text-cognac/70 text-[10px] tracking-[0.2em] uppercase font-sans">Open</span>
                     <span className="text-cognac text-sm font-serif font-light">23–36 tahun</span>
                   </div>
 
-                  {/* Venue */}
                   <h3 className={`font-serif font-light text-xl mb-1 ${isSoldOut ? 'text-cream/40' : 'text-cream'}`}>
                     {ev.name}
                   </h3>
                   <p className="text-cream/30 text-xs font-sans mb-5">{ev.address}</p>
 
-                  {/* Agenda timeline */}
                   <div className="mb-5 space-y-0">
                     {[
-                      { time: ev.time,                         label: 'Ketemu & welcome drinks' },
-                      { time: addMinutes(ev.time, 20),         label: 'Ice breaker — perkenalan singkat' },
-                      { time: addMinutes(ev.time, 45),         label: 'Kahoot & card games bareng MC' },
-                      { time: addMinutes(ev.time, 90),         label: 'Drawing game — tebak gambar' },
-                      { time: addMinutes(ev.time, 120),        label: 'Tukar kontak & wrap up' },
+                      { time: ev.time,                  label: 'Ketemu & welcome drinks' },
+                      { time: addMinutes(ev.time, 20),  label: 'Ice breaker — perkenalan singkat' },
+                      { time: addMinutes(ev.time, 45),  label: 'Kahoot & card games bareng MC' },
+                      { time: addMinutes(ev.time, 90),  label: 'Drawing game — tebak gambar' },
+                      { time: addMinutes(ev.time, 120), label: 'Tukar kontak & wrap up' },
                     ].map((step, idx, arr) => (
                       <div key={idx} className="flex gap-3 items-stretch">
                         <div className="flex flex-col items-center">
@@ -262,7 +244,6 @@ export default function Events() {
                     ))}
                   </div>
 
-                  {/* Capacity bars */}
                   <div className="space-y-2.5 mb-6">
                     {(['Wanita', 'Pria'] as const).map((label) => {
                       const filled = label === 'Wanita' ? ev.signups_women : ev.signups_men
@@ -285,7 +266,6 @@ export default function Events() {
                     })}
                   </div>
 
-                  {/* Who Joined toggle */}
                   {SEED_ATTENDEES[ev.id] && (
                     <div className="mb-5 pt-4 border-t border-espresso-border">
                       <button
@@ -344,7 +324,6 @@ export default function Events() {
                     </div>
                   )}
 
-                  {/* Price + CTA */}
                   <div className="mt-auto space-y-3">
                     <div className="flex items-center justify-between">
                       <div>
@@ -356,8 +335,18 @@ export default function Events() {
                       <span className="text-cream/20 text-[10px] font-sans tracking-wide">Termasuk drinks & snacks</span>
                     </div>
                     {signedUpEvents.has(ev.id) ? (
-                      <div className="block text-center w-full py-3 text-xs tracking-[0.15em] uppercase font-sans font-semibold border border-cognac/30 text-cognac/60">
-                        ✓ Sudah daftar
+                      <div className="space-y-2">
+                        <div className="block text-center w-full py-3 text-xs tracking-[0.15em] uppercase font-sans font-semibold border border-cognac/40 text-cognac bg-cognac/10">
+                          ✓ Terdaftar
+                        </div>
+                        {signupSuccess === ev.id && (
+                          <div className="border border-cognac/20 p-3 text-center" style={{ background: 'rgba(196,154,110,0.06)' }}>
+                            <p className="text-cream/70 text-xs font-sans leading-relaxed">
+                              Selamat! Kamu terdaftar untuk event ini.<br />
+                              <span className="text-cognac">Bayar Rp 175.000 di hari H ya.</span>
+                            </p>
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <button
@@ -384,7 +373,10 @@ export default function Events() {
           })}
         </div>
 
-        <p className="text-cream/20 text-xs font-sans text-center mt-8">
+        {signupError && (
+          <p className="text-red-400/70 text-xs font-sans text-center mt-4">{signupError}</p>
+        )}
+        <p className="text-cream/20 text-xs font-sans text-center mt-4">
           Semua peserta diverifikasi oleh Curated. Termasuk welcome drinks, snacks, MC, dan games. Slot terbatas — 3 pria & 3 wanita per acara.
         </p>
       </div>
