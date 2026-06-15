@@ -73,20 +73,22 @@ export default function AdminPage() {
   }
 
   async function approveEventSignup(id: string) {
-    await fetch('/api/admin-event-signups', {
+    const res = await fetch('/api/admin-event-signups', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password, action: 'approve', id }),
     })
+    if (!res.ok) { const j = await res.json().catch(() => ({})); alert('Approve failed: ' + (j.error ?? res.status)); return }
     setEventSignups(prev => prev.map((s) => s.id === id ? { ...s, status: 'approved' } : s))
   }
 
   async function rejectEventSignup(id: string) {
-    await fetch('/api/admin-event-signups', {
+    const res = await fetch('/api/admin-event-signups', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password, action: 'reject', id }),
     })
+    if (!res.ok) { const j = await res.json().catch(() => ({})); alert('Reject failed: ' + (j.error ?? res.status)); return }
     setEventSignups(prev => prev.map((s) => s.id === id ? { ...s, status: 'rejected' } : s))
   }
 
