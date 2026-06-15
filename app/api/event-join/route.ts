@@ -9,17 +9,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
 
-  const admin = supabaseAdmin()
+  let admin
+  try {
+    admin = supabaseAdmin()
+  } catch (e) {
+    return NextResponse.json({ error: (e as Error).message }, { status: 500 })
+  }
 
   const { error } = await admin.from('event_signups').upsert({
     email, event_id, event_name, event_date, gender, age, name, status: 'pending',
   }, { onConflict: 'email,event_id' })
 
   if (error) {
-    // Table may not exist yet
-    if (error.message.includes('event_signups')) {
-      return NextResponse.json({ error: 'event_signups table not set up. Run the SQL in Supabase.' }, { status: 500 })
-    }
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
