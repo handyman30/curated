@@ -39,9 +39,11 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [userEmail, setUserEmail] = useState<string>('')
   const [myProfile, setMyProfile] = useState<MyProfile>(undefined as unknown as MyProfile)
-  const [activeTab, setActiveTab] = useState<'discover' | 'profile'>('discover')
+  const [activeTab, setActiveTab] = useState<'discover' | 'events' | 'profile'>('discover')
   const [profileLikes, setProfileLikes] = useState<Array<{ name: string; occupation: string; age: number; created_at: string }>>([])
   const [likesLoaded, setLikesLoaded] = useState(false)
+  const [myEventSignups, setMyEventSignups] = useState<Array<{ event_id: string; status: string; event_name: string; event_date: string; created_at: string }>>([])
+  const [eventsLoaded, setEventsLoaded] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -110,17 +112,21 @@ export default function Dashboard() {
           <div className="flex items-center gap-3">
             {/* Browse / My Profile tabs */}
             <div className="flex items-center gap-1 border border-espresso-border p-1">
-              {(['discover', 'profile'] as const).map((t) => (
+              {(['discover', 'events', 'profile'] as const).map((t) => (
                 <button key={t} onClick={() => {
                   setActiveTab(t)
                   if (t === 'profile' && !likesLoaded && userEmail) {
                     fetch('/api/profile-likes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: userEmail }) })
                       .then(r => r.json()).then(j => { setProfileLikes(j.likes ?? []); setLikesLoaded(true) })
                   }
+                  if (t === 'events' && userEmail) {
+                    fetch(`/api/event-join?email=${encodeURIComponent(userEmail)}`)
+                      .then(r => r.json()).then(j => { setMyEventSignups(j.details ?? []); setEventsLoaded(true) })
+                  }
                 }}
                   className={`px-3 py-1 text-xs tracking-[0.1em] uppercase font-sans transition-colors ${activeTab === t ? 'bg-cognac text-espresso' : 'text-cream/40 hover:text-cream'}`}
                 >
-                  {t === 'discover' ? 'Browse' : 'My Profile'}
+                  {t === 'discover' ? 'Browse' : t === 'events' ? 'Events' : 'My Profile'}
                 </button>
               ))}
             </div>
@@ -159,6 +165,67 @@ export default function Dashboard() {
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-10">
+
+        {/* Events tab */}
+        {activeTab === 'events' && (
+          <div className="max-w-xl mx-auto">
+            {!userEmail ? (
+              <div className="text-center py-20">
+                <p className="font-serif font-light text-cream/30 text-2xl mb-4">Login dulu</p>
+                <a href="/auth" className="inline-block bg-cognac text-espresso px-8 py-3 text-xs tracking-[0.15em] uppercase font-sans font-semibold hover:bg-cognac-light transition-colors">Log In</a>
+              </div>
+            ) : !eventsLoaded ? (
+              <div className="flex justify-center py-20">
+                <div className="w-4 h-4 border border-cognac/40 border-t-cognac rounded-full animate-spin" />
+              </div>
+            ) : myEventSignups.length === 0 ? (
+              <div className="text-center py-20">
+                <p className="font-serif font-light text-cream/30 text-2xl mb-3">Belum ada event</p>
+                <p className="text-cream/20 text-sm font-sans mb-6">Daftar event Saturday gathering dari halaman utama.</p>
+                <a href="/#events" className="inline-block border border-cognac/40 text-cognac px-8 py-3 text-xs tracking-[0.15em] uppercase font-sans hover:bg-cognac/10 transition-colors">Lihat Events →</a>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-cream/25 text-[10px] tracking-[0.2em] uppercase font-sans mb-5">Pendaftaran Eventmu ({myEventSignups.length})</p>
+                {myEventSignups.map((s) => (
+                  <div key={s.event_id} className="border border-espresso-border p-5" style={{ background: '#1A110C' }}>
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-cream font-serif font-light text-lg mb-0.5">{s.event_name || s.event_id}</p>
+                        <p className="text-cream/35 text-xs font-sans">{s.event_date}</p>
+                      </div>
+                      <span className={`flex-shrink-0 text-[10px] tracking-[0.15em] uppercase font-sans px-3 py-1 border ${
+                        s.status === 'approved'
+                          ? 'bg-cognac/15 border-cognac/40 text-cognac'
+                          : s.status === 'rejected'
+                          ? 'bg-red-900/20 border-red-900/30 text-red-400/60'
+                          : 'bg-espresso-border border-espresso-border text-cream/30'
+                      }`}>
+                        {s.status === 'approved' ? '✓ Dikonfirmasi' : s.status === 'rejected' ? 'Tidak dapat slot' : 'Menunggu konfirmasi'}
+                      </span>
+                    </div>
+                    {s.status === 'approved' && (
+                      <div className="mt-4 border-t border-espresso-border pt-4">
+                        <p className="text-cream/50 text-xs font-sans mb-3">Kamu dapat slot! Bayar Rp 175.000 di hari H.</p>
+                        <a
+                          href={`https://wa.me/61400403294?text=${encodeURIComponent(`Halo Curated! Saya konfirmasi kehadiran saya di ${s.event_name} pada ${s.event_date}.`)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-block text-xs tracking-[0.1em] uppercase font-sans border border-green-600/40 text-green-400/80 px-4 py-2 hover:bg-green-600/10 transition-colors"
+                        >
+                          💬 Konfirmasi via WhatsApp
+                        </a>
+                      </div>
+                    )}
+                    {s.status === 'pending' && (
+                      <p className="text-cream/25 text-xs font-sans mt-3">Tim Curated akan konfirmasi slotmu secepatnya.</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Profile tab */}
         {activeTab === 'profile' && (

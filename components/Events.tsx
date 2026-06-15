@@ -46,6 +46,8 @@ export default function Events() {
   const [signupSuccess, setSignupSuccess] = useState<string | null>(null)
   const [userEmail, setUserEmail] = useState<string>('')
   const [userProfile, setUserProfile] = useState<{ name?: string; gender?: string; age?: number; status?: string } | null>(null)
+  const [showPhoneForm, setShowPhoneForm] = useState<string | null>(null)
+  const [phoneInput, setPhoneInput] = useState<Record<string, string>>({})
 
   useEffect(() => {
     import('@/lib/supabase').then(({ supabase }) => {
@@ -63,13 +65,9 @@ export default function Events() {
     })
   }, [])
 
-  async function handleSignup(ev: { id: string; name: string; date: Date; dateStr: string }) {
+  function openSignup(ev: { id: string; name: string; date: Date; dateStr: string }) {
     if (!userEmail) { window.location.href = '/join'; return }
-
-    if (!userProfile) {
-      window.location.href = '/apply'
-      return
-    }
+    if (!userProfile) { window.location.href = '/apply'; return }
     if (userProfile.status === 'waitlist') {
       setSignupError('Aplikasimu masih dalam review. Kami akan kabari setelah disetujui.')
       setTimeout(() => setSignupError(''), 5000)
@@ -85,7 +83,15 @@ export default function Events() {
       setTimeout(() => setSignupError(''), 5000)
       return
     }
+    setShowPhoneForm(ev.id)
+  }
 
+  async function submitSignup(ev: { id: string; name: string; date: Date; dateStr: string }) {
+    const phone = phoneInput[ev.id] ?? ''
+    if (!phone.trim()) {
+      setSignupError('Masukkan nomor WhatsApp dulu ya.')
+      return
+    }
     setSigningUp(ev.id)
     setSignupError('')
     setSignupSuccess(null)
@@ -100,11 +106,13 @@ export default function Events() {
         gender: userProfile?.gender ?? '',
         age: userProfile?.age ?? null,
         name: userProfile?.name ?? '',
+        phone: phone.trim(),
       }),
     })
     if (res.ok) {
       setSignedUpEvents(prev => new Set([...prev, ev.id]))
       setSignupSuccess(ev.id)
+      setShowPhoneForm(null)
     } else {
       const j = await res.json().catch(() => ({}))
       setSignupError(j.error ?? 'Gagal daftar — coba lagi')
@@ -337,20 +345,57 @@ export default function Events() {
                     {signedUpEvents.has(ev.id) ? (
                       <div className="space-y-2">
                         <div className="block text-center w-full py-3 text-xs tracking-[0.15em] uppercase font-sans font-semibold border border-cognac/40 text-cognac bg-cognac/10">
-                          ✓ Terdaftar
+                          ✓ Terdaftar — Menunggu Konfirmasi
                         </div>
-                        {signupSuccess === ev.id && (
-                          <div className="border border-cognac/20 p-3 text-center" style={{ background: 'rgba(196,154,110,0.06)' }}>
-                            <p className="text-cream/70 text-xs font-sans leading-relaxed">
-                              Selamat! Kamu terdaftar untuk event ini.<br />
-                              <span className="text-cognac">Bayar Rp 175.000 di hari H ya.</span>
-                            </p>
-                          </div>
-                        )}
+                        <div className="border border-cognac/20 p-3 text-center" style={{ background: 'rgba(196,154,110,0.06)' }}>
+                          <p className="text-cream/70 text-xs font-sans leading-relaxed mb-3">
+                            Selamat! Kamu terdaftar untuk event ini.<br />
+                            <span className="text-cognac">Bayar Rp 175.000 di hari H ya.</span>
+                          </p>
+                          <a
+                            href={`https://wa.me/61400403294?text=${encodeURIComponent(`Halo Curated! Saya konfirmasi kehadiran saya di ${ev.name} pada ${ev.dateStr}. Nama: ${userProfile?.name ?? userEmail}.`)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block text-center w-full py-2 text-xs tracking-[0.1em] uppercase font-sans border border-green-600/40 text-green-400/80 hover:bg-green-600/10 transition-colors"
+                          >
+                            💬 Konfirmasi via WhatsApp
+                          </a>
+                        </div>
+                      </div>
+                    ) : showPhoneForm === ev.id ? (
+                      <div className="space-y-2">
+                        <p className="text-cream/40 text-[11px] font-sans">Nomor WhatsApp kamu</p>
+                        <input
+                          type="tel"
+                          placeholder="08xx xxxx xxxx"
+                          value={phoneInput[ev.id] ?? ''}
+                          onChange={(e) => setPhoneInput(prev => ({ ...prev, [ev.id]: e.target.value }))}
+                          className="w-full bg-transparent border border-espresso-border text-cream text-sm font-sans px-3 py-2.5 focus:outline-none focus:border-cognac/50 placeholder:text-cream/20"
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => submitSignup(ev)}
+                            disabled={signingUp === ev.id}
+                            className="flex-1 bg-cognac text-espresso py-2.5 text-xs tracking-[0.15em] uppercase font-sans font-semibold hover:bg-cognac-light disabled:opacity-50 transition-colors"
+                          >
+                            {signingUp === ev.id ? (
+                              <span className="inline-flex items-center gap-2 justify-center">
+                                <span className="w-3 h-3 border border-espresso/30 border-t-espresso rounded-full animate-spin" />
+                                Mendaftar...
+                              </span>
+                            ) : 'Konfirmasi Daftar'}
+                          </button>
+                          <button
+                            onClick={() => setShowPhoneForm(null)}
+                            className="px-4 py-2.5 text-xs font-sans text-cream/30 border border-espresso-border hover:text-cream/60 transition-colors"
+                          >
+                            Batal
+                          </button>
+                        </div>
                       </div>
                     ) : (
                       <button
-                        onClick={() => handleSignup(ev)}
+                        onClick={() => openSignup(ev)}
                         disabled={isSoldOut || signingUp === ev.id}
                         className={`block text-center w-full py-3 text-xs tracking-[0.15em] uppercase font-sans font-semibold transition-colors ${
                           isSoldOut
@@ -358,12 +403,7 @@ export default function Events() {
                             : 'bg-cognac text-espresso hover:bg-cognac-light disabled:opacity-50'
                         }`}
                       >
-                        {signingUp === ev.id ? (
-                          <span className="inline-flex items-center gap-2 justify-center">
-                            <span className="w-3 h-3 border border-espresso/30 border-t-espresso rounded-full animate-spin" />
-                            Mendaftar...
-                          </span>
-                        ) : isSoldOut ? 'Penuh' : 'Daftar Event'}
+                        {isSoldOut ? 'Penuh' : 'Daftar Event'}
                       </button>
                     )}
                   </div>

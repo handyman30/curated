@@ -3,7 +3,7 @@ import { supabaseAdmin } from '@/lib/supabase'
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
-  const { email, event_id, event_name, event_date, gender, age, name } = body
+  const { email, event_id, event_name, event_date, gender, age, name, phone } = body
 
   if (!email || !event_id) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { error } = await admin.from('event_signups').upsert({
-    email, event_id, event_name, event_date, gender, age, name, status: 'pending',
+    email, event_id, event_name, event_date, gender, age, name, phone, status: 'pending',
   }, { onConflict: 'email,event_id' })
 
   if (error) {
@@ -30,19 +30,23 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const email = searchParams.get('email')
-  if (!email) return NextResponse.json({ signups: [] })
+  if (!email) return NextResponse.json({ signups: [], details: [] })
 
   let admin
   try {
     admin = supabaseAdmin()
-  } catch (e) {
-    return NextResponse.json({ signups: [] })
+  } catch {
+    return NextResponse.json({ signups: [], details: [] })
   }
 
   const { data } = await admin
     .from('event_signups')
-    .select('event_id')
+    .select('event_id, status, event_name, event_date, created_at')
     .eq('email', email)
+    .order('created_at', { ascending: false })
 
-  return NextResponse.json({ signups: (data ?? []).map((r: { event_id: string }) => r.event_id) })
+  return NextResponse.json({
+    signups: (data ?? []).map((r: { event_id: string }) => r.event_id),
+    details: data ?? [],
+  })
 }

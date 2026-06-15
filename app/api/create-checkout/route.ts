@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
         price_data: {
           currency: 'idr',
           product_data: { name: 'Curated Matchmaking — Unlock semua profil & perkenalan' },
-          unit_amount: 75000, // Rp 75.000
+          unit_amount: 7500000, // Rp 75.000 (IDR uses subunits: 75000 × 100)
           recurring: { interval: 'month' },
         },
         quantity: 1,
