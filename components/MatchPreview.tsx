@@ -158,7 +158,7 @@ export default function MatchPreview() {
                       href="#waitlist"
                       className="inline-block bg-cognac/10 border border-cognac/30 text-cognac text-xs tracking-[0.15em] uppercase font-sans px-4 py-2 hover:bg-cognac/20 transition-colors"
                     >
-                      Unlock · $5/mo
+                      Unlock · Rp 75.000/bln
                     </a>
                   </div>
                 </div>
