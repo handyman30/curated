@@ -50,7 +50,7 @@ export default function WhyCurated() {
           <p className="text-cognac/60 text-xs tracking-[0.35em] uppercase mb-4 font-sans">
             Our Approach
           </p>
-          <h2 className="font-serif font-light text-4xl md:text-5xl text-cream max-w-md leading-tight">
+          <h2 className="font-serif font-light text-4xl md:text-5xl text-cream max-w-lg leading-tight">
             Why Curated is Different
           </h2>
         </div>
