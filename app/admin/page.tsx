@@ -226,13 +226,13 @@ export default function AdminPage() {
                             {s.status === 'approved' && (
                               <div className="flex items-center gap-2">
                                 <span className="text-cognac text-xs font-sans">✓ Disetujui</span>
-                                <button onClick={() => rejectEventSignup(s.id)} className="border border-red-900/40 text-red-400/50 px-2 py-1 text-[10px] uppercase font-sans hover:border-red-400/50 hover:text-red-400 transition-all">Cancel</button>
+                                <button onClick={() => rejectEventSignup(s.id)} className="border border-red-500/60 text-red-400 px-3 py-1.5 text-[10px] tracking-[0.1em] uppercase font-sans hover:bg-red-500/10 transition-all">Reject</button>
                               </div>
                             )}
                             {s.status === 'rejected' && (
                               <div className="flex items-center gap-2">
                                 <span className="text-cream/30 text-xs font-sans">Ditolak</span>
-                                <button onClick={() => approveEventSignup(s.id)} className="border border-cognac/30 text-cognac/50 px-2 py-1 text-[10px] uppercase font-sans hover:border-cognac hover:text-cognac transition-all">Re-approve</button>
+                                <button onClick={() => approveEventSignup(s.id)} className="border border-cognac/50 text-cognac px-3 py-1.5 text-[10px] tracking-[0.1em] uppercase font-sans hover:bg-cognac/10 transition-all">Re-approve</button>
                               </div>
                             )}
                           </div>
