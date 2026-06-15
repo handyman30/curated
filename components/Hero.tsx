@@ -39,9 +39,9 @@ export default function Hero() {
             </div>
 
             <h1 className="font-serif font-light text-[clamp(3rem,6.5vw,5rem)] text-cream leading-[1.05] tracking-tight mb-7">
-              You know your worth.
+              You Know Your Worth.
               <br />
-              <span className="text-cream/40 italic">Your matches should too.</span>
+              <span className="text-cream/40 italic text-4xl md:text-3xl"> Your Matches Should Too. </span>
             </h1>
 
             <p className="text-cream/55 text-lg md:text-xl max-w-xl mb-10 font-sans leading-relaxed">

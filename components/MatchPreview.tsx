@@ -36,9 +36,9 @@ export default function MatchPreview() {
           </p>
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <h2 className="font-serif font-light text-4xl md:text-5xl text-cream max-w-lg leading-tight">
-              We introduce you.
+              We Introduce You.
               <br />
-              <span className="text-cream/45 italic">You decide.</span>
+              <span className="text-cream/45 italic text-4xl md:text-3xl"> You Decide. </span>
             </h2>
             <p className="text-cream/40 text-sm font-sans max-w-xs leading-relaxed">
               After your application is reviewed, we send you curated matches.
