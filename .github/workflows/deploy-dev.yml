@@ -19,7 +19,7 @@ jobs:
         run: npm install -g netlify-cli
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn install --frozen-lockfile
 
       - name: Deploy to Netlify Dev
         run: netlify deploy --build --prod
