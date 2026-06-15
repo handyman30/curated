@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
 type LikeRow = { from_email: string; from_name: string; liked_profile: string; created_at: string }
 
@@ -26,28 +26,8 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false)
   const [tab, setTab] = useState<'waitlist' | 'approved' | 'rejected' | 'events' | 'interests'>('waitlist')
   const [likes, setLikes] = useState<LikeRow[]>([])
-
-  const demoEvents = useMemo(() => {
-    const d = new Date()
-    d.setDate(d.getDate() + 1)
-    while (d.getDay() !== 6) d.setDate(d.getDate() + 1)
-    const dateStr = d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-    return [
-      {
-        id: 'evt-0',
-        venue: 'Monolog',
-        address: 'Plaza Senayan, Jakarta Selatan',
-        ageGroup: 'Open · 23–36 tahun',
-        date: `${dateStr} · 10:00 WIB`,
-        capacity: 3,
-        attendees: [
-          { name: 'Dian Rachmanda', gender: 'male', age: 28, photo: '/profiles/dian.jpg' },
-          { name: 'Jennifer Christiana', gender: 'female', age: 28, photo: '/profiles/jennifer.jpg' },
-          { name: 'Handy Hasan', gender: 'male', age: 28, photo: '/profiles/handy.jpg' },
-        ],
-      },
-    ]
-  }, [])
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [eventSignups, setEventSignups] = useState<any[]>([])
 
   async function login(e: React.FormEvent) {
     e.preventDefault()
@@ -66,14 +46,17 @@ export default function AdminPage() {
 
   async function load(pwd = password) {
     setLoading(true)
-    const [profilesRes, likesRes] = await Promise.all([
+    const [profilesRes, likesRes, eventsRes] = await Promise.all([
       fetch('/api/admin-profiles', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pwd }) }),
       fetch('/api/admin-likes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pwd }) }),
+      fetch('/api/admin-event-signups', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pwd }) }),
     ])
     const profilesJson = await profilesRes.json()
     const likesJson = await likesRes.json()
+    const eventsJson = await eventsRes.json()
     setApplicants(profilesJson.data ?? [])
     setLikes(likesJson.data ?? [])
+    setEventSignups(eventsJson.data ?? [])
     setLoading(false)
   }
 
@@ -84,6 +67,24 @@ export default function AdminPage() {
       body: JSON.stringify({ id: applicant.id, email: applicant.email, name: applicant.name }),
     })
     load()
+  }
+
+  async function approveEventSignup(id: string) {
+    await fetch('/api/admin-event-signups', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, action: 'approve', id }),
+    })
+    setEventSignups(prev => prev.map((s) => s.id === id ? { ...s, status: 'approved' } : s))
+  }
+
+  async function rejectEventSignup(id: string) {
+    await fetch('/api/admin-event-signups', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, action: 'reject', id }),
+    })
+    setEventSignups(prev => prev.map((s) => s.id === id ? { ...s, status: 'rejected' } : s))
   }
 
   async function reject(id: string) {
@@ -150,7 +151,7 @@ export default function AdminPage() {
                 tab === 'events' ? 'bg-cognac text-espresso' : 'text-cream/40 hover:text-cream'
               }`}
             >
-              Events ({demoEvents.length})
+              Events ({eventSignups.length})
             </button>
             <button
               onClick={() => setTab('interests')}
@@ -167,53 +168,78 @@ export default function AdminPage() {
       <main className="max-w-7xl mx-auto px-6 py-10">
         {tab === 'events' ? (
           <div className="space-y-6">
-            {demoEvents.map((ev) => (
-              <div key={ev.id} className="border border-espresso-border p-6" style={{ background: '#1A110C' }}>
-                <div className="flex items-start justify-between mb-5">
-                  <div>
-                    <p className="text-cream font-serif font-light text-xl mb-1">{ev.venue}</p>
-                    <p className="text-cream/40 text-xs font-sans">{ev.address}</p>
-                    <p className="text-cognac/60 text-xs font-sans mt-1">{ev.date}</p>
-                  </div>
-                  <div className="border border-cognac/30 px-3 py-1">
-                    <span className="text-cognac text-xs font-sans tracking-wide">{ev.ageGroup}</span>
-                  </div>
-                </div>
-                <p className="text-cream/30 text-[10px] tracking-[0.2em] uppercase font-sans mb-3">
-                  Peserta ({ev.attendees.length}/{ev.capacity * 2})
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {ev.attendees.map((a) => (
-                    <div key={a.name} className="flex items-center gap-3 border border-espresso-border p-3" style={{ background: '#0E0907' }}>
-                      <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 bg-cognac/20">
-                        <img
-                          src={a.photo}
-                          alt={a.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            const t = e.currentTarget
-                            t.style.display = 'none'
-                            if (t.parentElement) {
-                              t.parentElement.innerHTML = `<span class="w-full h-full flex items-center justify-center font-serif text-cognac text-sm">${a.name[0]}</span>`
-                            }
-                          }}
-                        />
-                      </div>
+            {eventSignups.length === 0 ? (
+              <p className="text-center text-cream/30 py-20 font-sans text-sm">No event signups yet</p>
+            ) : (() => {
+              // Group by event_id
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const groups: Record<string, any[]> = {}
+              for (const s of eventSignups) {
+                if (!groups[s.event_id]) groups[s.event_id] = []
+                groups[s.event_id].push(s)
+              }
+              return Object.entries(groups).map(([eventId, signups]) => {
+                const first = signups[0]
+                const approved = signups.filter((s) => s.status === 'approved').length
+                const pending = signups.filter((s) => s.status === 'pending').length
+                return (
+                  <div key={eventId} className="border border-espresso-border p-6" style={{ background: '#1A110C' }}>
+                    <div className="flex items-start justify-between mb-5">
                       <div>
-                        <p className="text-cream/80 font-sans text-sm">{a.name}</p>
-                        <p className="text-cream/30 text-xs font-sans capitalize">{a.gender} · {a.age} tahun</p>
+                        <p className="text-cream font-serif font-light text-xl mb-1">{first.event_name || eventId}</p>
+                        <p className="text-cognac/60 text-xs font-sans mt-1">{first.event_date}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        {pending > 0 && (
+                          <div className="border border-amber-500/30 px-3 py-1">
+                            <span className="text-amber-400/70 text-xs font-sans tracking-wide">{pending} pending</span>
+                          </div>
+                        )}
+                        <div className="border border-cognac/30 px-3 py-1">
+                          <span className="text-cognac text-xs font-sans tracking-wide">{signups.length} daftar · {approved} disetujui</span>
+                        </div>
                       </div>
                     </div>
-                  ))}
-                  {Array.from({ length: ev.capacity * 2 - ev.attendees.length }).map((_, i) => (
-                    <div key={`empty-${i}`} className="flex items-center gap-3 border border-espresso-border/40 border-dashed p-3">
-                      <div className="w-10 h-10 rounded-full border border-espresso-border/50 border-dashed flex-shrink-0" />
-                      <p className="text-cream/15 text-xs font-sans">Slot tersedia</p>
+                    <p className="text-cream/30 text-[10px] tracking-[0.2em] uppercase font-sans mb-3">Peserta</p>
+                    <div className="space-y-2">
+                      {signups.map((s) => (
+                        <div key={s.id} className="flex items-center justify-between border border-espresso-border/60 p-3" style={{ background: '#0E0907' }}>
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-full bg-cognac/20 flex items-center justify-center flex-shrink-0">
+                              <span className="font-serif text-cognac text-sm">{(s.name || '?')[0]}</span>
+                            </div>
+                            <div>
+                              <p className="text-cream/80 font-sans text-sm">{s.name}</p>
+                              <p className="text-cream/30 text-xs font-sans capitalize">{s.gender} · {s.age} tahun · {s.email}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            {s.status === 'pending' && (
+                              <>
+                                <button
+                                  onClick={() => approveEventSignup(s.id)}
+                                  className="bg-cognac text-espresso px-3 py-1.5 text-xs tracking-[0.1em] uppercase font-sans font-semibold hover:bg-cognac-light transition-colors"
+                                >
+                                  Approve
+                                </button>
+                                <button
+                                  onClick={() => rejectEventSignup(s.id)}
+                                  className="border border-espresso-border text-cream/40 px-3 py-1.5 text-xs tracking-[0.1em] uppercase font-sans hover:text-cream/60 transition-all"
+                                >
+                                  Reject
+                                </button>
+                              </>
+                            )}
+                            {s.status === 'approved' && <span className="text-cognac text-xs font-sans tracking-wide">✓ Disetujui</span>}
+                            {s.status === 'rejected' && <span className="text-cream/30 text-xs font-sans tracking-wide">Ditolak</span>}
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
-            ))}
+                  </div>
+                )
+              })
+            })()}
           </div>
         ) : tab === 'interests' ? (
           <div>

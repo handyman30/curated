@@ -4,7 +4,7 @@ import { Resend } from 'resend'
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
-  const { name, email, age, gender, occupation, city, goals, linkedin, instagram, auth_user_id } = body
+  const { name, email, age, gender, occupation, city, goals, linkedin, instagram, auth_user_id, photo_url } = body
 
   if (!email || !name || !gender || !age || !occupation || !city || !goals) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -16,10 +16,21 @@ export async function POST(req: NextRequest) {
   let { error } = await admin.from('profiles').upsert({
     email, name, age: parseInt(age) || null, gender, occupation, city, goals,
     linkedin: linkedin || null, instagram: instagram || null,
+    photo_url: photo_url || null,
     status: 'waitlist', auth_user_id: auth_user_id || null,
   }, { onConflict: 'email' })
 
   if (error?.message?.includes('auth_user_id')) {
+    const result = await admin.from('profiles').upsert({
+      email, name, age: parseInt(age) || null, gender, occupation, city, goals,
+      linkedin: linkedin || null, instagram: instagram || null,
+      photo_url: photo_url || null,
+      status: 'waitlist',
+    }, { onConflict: 'email' })
+    error = result.error
+  }
+
+  if (error?.message?.includes('photo_url')) {
     const result = await admin.from('profiles').upsert({
       email, name, age: parseInt(age) || null, gender, occupation, city, goals,
       linkedin: linkedin || null, instagram: instagram || null,

@@ -356,15 +356,24 @@ export default function Dashboard() {
                     {/* Bio */}
                     <p className="text-cream/45 text-sm font-serif font-light italic leading-relaxed flex-1">{profile.bio}</p>
 
-                    {/* Locked contact details */}
+                    {/* Contact details — revealed after expressing interest */}
                     <div className="space-y-1.5 pt-3 border-t border-espresso-border">
+                      {!isLiked && !isPaid && (
+                        <p className="text-cream/20 text-[10px] font-sans tracking-wide mb-2">
+                          Kontak terungkap setelah kamu nyatakan minat
+                        </p>
+                      )}
                       <div className="flex items-center gap-2">
                         <span className="text-cream/20 text-xs font-sans w-16">Instagram</span>
-                        <span className={`text-xs font-sans ${isPaid ? 'text-cognac' : 'text-cream/20 blur-sm select-none'}`}>{profile.instagram}</span>
+                        <span className={`text-xs font-sans ${(isLiked || isPaid) ? 'text-cognac' : 'text-cream/20 blur-sm select-none'}`}>
+                          {profile.instagram}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-cream/20 text-xs font-sans w-16">LinkedIn</span>
-                        <span className={`text-xs font-sans ${isPaid ? 'text-cognac' : 'text-cream/20 blur-sm select-none'}`}>{profile.linkedin}</span>
+                        <span className={`text-xs font-sans ${(isLiked || isPaid) ? 'text-cognac' : 'text-cream/20 blur-sm select-none'}`}>
+                          {profile.linkedin}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -380,7 +389,7 @@ export default function Dashboard() {
                             : 'border border-espresso-border text-cream/40 hover:border-cognac/40 hover:text-cognac'
                         }`}
                       >
-                        {isLiked ? '♥ Interested' : '♡ I\'m interested'}
+                        {isLiked ? '♥ Interested — kontak terungkap' : '♡ Saya tertarik'}
                       </button>
                     </div>
                   )}

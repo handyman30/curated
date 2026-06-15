@@ -51,7 +51,7 @@ export default function Navbar() {
             Log in
           </a>
           <a
-            href="/auth"
+            href="/join"
             className="border border-cognac/50 text-cognac text-xs tracking-[0.15em] uppercase px-5 py-2.5 font-sans hover:bg-cognac hover:text-espresso transition-all duration-200"
           >
             Apply

@@ -7,25 +7,25 @@ const STEPS = [
     number: '01',
     title: 'Apply',
     description:
-      "Complete a detailed profile covering your background, values, lifestyle, and what you're looking for in a partner.",
+      'Submit a private application. Every profile is reviewed manually — no auto-approvals, no random signups.',
   },
   {
     number: '02',
     title: 'Verify',
     description:
-      'We verify your identity, educational credentials, and professional background before your profile goes live.',
+      'Your profile is never shown publicly. Identity and professional background are checked before you are introduced to anyone.',
   },
   {
     number: '03',
     title: 'Match',
     description:
-      'Our AI and human matchmakers analyse deep compatibility signals and identify your strongest potential matches.',
+      'We identify compatibility on both sides. Contact details stay hidden until both parties confirm interest — privately.',
   },
   {
     number: '04',
     title: 'Meet',
     description:
-      'Receive curated introductions to verified, compatible professionals. Every introduction is intentional.',
+      'Once both sides say yes, we make the introduction. No guessing, no ghosting, no cold messages out of nowhere.',
   },
 ]
 

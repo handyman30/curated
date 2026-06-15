@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 
@@ -33,6 +33,9 @@ export default function ApplyPage() {
   const [loading, setLoading] = useState(false)
   const [checking, setChecking] = useState(true)
   const [error, setError] = useState('')
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [photoPreview, setPhotoPreview] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {
@@ -65,15 +68,42 @@ export default function ApplyPage() {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Foto terlalu besar (max 5MB)')
+      return
+    }
+    setPhotoFile(file)
+    setPhotoPreview(URL.createObjectURL(file))
+    setError('')
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setLoading(true)
     try {
+      let photoUrl = ''
+      if (photoFile) {
+        const ext = photoFile.name.split('.').pop() || 'jpg'
+        const path = `${authUserId}.${ext}`
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('profile-photos')
+          .upload(path, photoFile, { contentType: photoFile.type, upsert: true })
+        if (!uploadError && uploadData) {
+          const { data: urlData } = supabase.storage
+            .from('profile-photos')
+            .getPublicUrl(uploadData.path)
+          photoUrl = urlData.publicUrl
+        }
+      }
+
       const res = await fetch('/api/apply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, email, auth_user_id: authUserId }),
+        body: JSON.stringify({ ...form, email, auth_user_id: authUserId, photo_url: photoUrl || undefined }),
       })
       if (!res.ok) {
         const j = await res.json()
@@ -160,6 +190,41 @@ export default function ApplyPage() {
                   {icon} {label}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Photo */}
+          <div>
+            <label className={labelClass}>Foto profil <span className="text-cream/20">(opsional)</span></label>
+            <div
+              className="relative border border-espresso-border hover:border-cognac/40 transition-colors cursor-pointer"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {photoPreview ? (
+                <div className="flex items-center gap-4 p-4">
+                  <img
+                    src={photoPreview}
+                    alt="Preview"
+                    className="w-16 h-16 object-cover rounded-full flex-shrink-0"
+                  />
+                  <div>
+                    <p className="text-cream/60 text-sm font-sans">{photoFile?.name}</p>
+                    <p className="text-cream/30 text-xs font-sans mt-0.5">Klik untuk ganti foto</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-8 gap-2">
+                  <span className="text-cream/20 text-2xl">↑</span>
+                  <p className="text-cream/30 text-xs font-sans tracking-wide">Upload foto (JPG, PNG · max 5MB)</p>
+                </div>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handlePhotoChange}
+                className="sr-only"
+              />
             </div>
           </div>
 

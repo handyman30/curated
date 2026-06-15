@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useScrollAnimation } from '@/hooks/useScrollAnimation'
 
 const VENUES = [
@@ -70,6 +70,49 @@ function slotsLeft(cap: number, filled: number) { return cap - filled }
 export default function Events() {
   const { ref, isVisible } = useScrollAnimation()
   const [expandedEvent, setExpandedEvent] = useState<string | null>(null)
+  const [signedUpEvents, setSignedUpEvents] = useState<Set<string>>(new Set())
+  const [signingUp, setSigningUp] = useState<string | null>(null)
+  const [userEmail, setUserEmail] = useState<string>('')
+  const [userProfile, setUserProfile] = useState<{ name?: string; gender?: string; age?: number } | null>(null)
+
+  useEffect(() => {
+    // Dynamically import supabase only client-side
+    import('@/lib/supabase').then(({ supabase }) => {
+      supabase.auth.getSession().then(({ data }) => {
+        const email = data.session?.user?.email || sessionStorage.getItem('curated_email') || ''
+        if (!email) return
+        setUserEmail(email)
+        // Fetch which events they've signed up for
+        fetch(`/api/event-join?email=${encodeURIComponent(email)}`)
+          .then(r => r.json())
+          .then(j => setSignedUpEvents(new Set(j.signups ?? [])))
+        // Fetch their profile for gender/age
+        fetch('/api/my-profile', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) })
+          .then(r => r.json())
+          .then(j => { if (j.profile) setUserProfile(j.profile) })
+      })
+    })
+  }, [])
+
+  async function handleSignup(ev: { id: string; name: string; date: Date }) {
+    if (!userEmail) { window.location.href = '/auth'; return }
+    setSigningUp(ev.id)
+    const res = await fetch('/api/event-join', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: userEmail,
+        event_id: ev.id,
+        event_name: ev.name,
+        event_date: formatDay(ev.date),
+        gender: userProfile?.gender ?? '',
+        age: userProfile?.age ?? null,
+        name: userProfile?.name ?? '',
+      }),
+    })
+    if (res.ok) setSignedUpEvents(prev => new Set([...prev, ev.id]))
+    setSigningUp(null)
+  }
 
   const events = useMemo(() => {
     const saturdays = nextSaturdays(3)
@@ -312,16 +355,28 @@ export default function Events() {
                       </div>
                       <span className="text-cream/20 text-[10px] font-sans tracking-wide">Termasuk drinks & snacks</span>
                     </div>
-                    <a
-                      href="/auth"
-                      className={`block text-center w-full py-3 text-xs tracking-[0.15em] uppercase font-sans font-semibold transition-colors ${
-                        isSoldOut
-                          ? 'border border-espresso-border text-cream/20 pointer-events-none'
-                          : 'bg-cognac text-espresso hover:bg-cognac-light'
-                      }`}
-                    >
-                      {isSoldOut ? 'Penuh' : 'Daftar Waitlist'}
-                    </a>
+                    {signedUpEvents.has(ev.id) ? (
+                      <div className="block text-center w-full py-3 text-xs tracking-[0.15em] uppercase font-sans font-semibold border border-cognac/30 text-cognac/60">
+                        ✓ Sudah daftar
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => handleSignup(ev)}
+                        disabled={isSoldOut || signingUp === ev.id}
+                        className={`block text-center w-full py-3 text-xs tracking-[0.15em] uppercase font-sans font-semibold transition-colors ${
+                          isSoldOut
+                            ? 'border border-espresso-border text-cream/20 cursor-not-allowed'
+                            : 'bg-cognac text-espresso hover:bg-cognac-light disabled:opacity-50'
+                        }`}
+                      >
+                        {signingUp === ev.id ? (
+                          <span className="inline-flex items-center gap-2 justify-center">
+                            <span className="w-3 h-3 border border-espresso/30 border-t-espresso rounded-full animate-spin" />
+                            Mendaftar...
+                          </span>
+                        ) : isSoldOut ? 'Penuh' : 'Daftar Event'}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

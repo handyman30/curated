@@ -12,5 +12,13 @@ export async function POST(req: NextRequest) {
     .eq('email', email)
     .single()
 
-  return NextResponse.json({ profile: data ?? null })
+  if (!data) return NextResponse.json({ profile: null })
+
+  // Waitlist position = count of people who applied before them + 1
+  const { count } = await admin
+    .from('profiles')
+    .select('*', { count: 'exact', head: true })
+    .lt('created_at', data.created_at)
+
+  return NextResponse.json({ profile: { ...data, position: (count ?? 0) + 1 } })
 }

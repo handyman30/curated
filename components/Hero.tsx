@@ -35,22 +35,22 @@ export default function Hero() {
           <div className={`transition-all duration-1000 ease-out ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <div className="flex items-center gap-3 mb-10">
               <span className="w-6 h-px bg-cognac/50" />
-              <p className="text-cognac/80 text-xs tracking-[0.35em] uppercase font-sans">Jakarta · Exclusive · By Application Only</p>
+              <p className="text-cognac/80 text-xs tracking-[0.35em] uppercase font-sans">Jakarta · Private · By Application</p>
             </div>
 
             <h1 className="font-serif font-light text-[clamp(3rem,6.5vw,5rem)] text-cream leading-[1.05] tracking-tight mb-7">
-              You know your worth.
+              Private introductions
               <br />
-              <span className="text-cream/40 italic">Your matches should too.</span>
+              <span className="text-cream/40 italic">for ambitious professionals.</span>
             </h1>
 
             <p className="text-cream/55 text-lg md:text-xl max-w-xl mb-10 font-sans leading-relaxed">
-              Curated introduces ambitious Indonesian professionals to verified, compatible matches — through AI matching and real human review.
+              No swiping. No public profiles. We introduce verified Jakarta professionals — contact details only revealed after both sides confirm interest.
             </p>
 
             <div className="flex flex-col sm:flex-row items-start gap-4 mb-16">
-              <a href="/auth" className="group inline-flex items-center gap-2.5 bg-cognac text-espresso px-9 py-4 text-xs tracking-[0.15em] uppercase font-sans font-semibold hover:bg-cognac-light transition-all duration-200">
-                Join the Waitlist
+              <a href="/join" className="group inline-flex items-center gap-2.5 bg-cognac text-espresso px-9 py-4 text-xs tracking-[0.15em] uppercase font-sans font-semibold hover:bg-cognac-light transition-all duration-200">
+                Apply to Join
                 <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
               </a>
               <a href="#how-it-works" className="inline-flex items-center border border-cream/15 text-cream/50 px-9 py-4 text-xs tracking-[0.15em] uppercase font-sans hover:border-cream/30 hover:text-cream/80 transition-all duration-200">
@@ -59,7 +59,7 @@ export default function Hero() {
             </div>
 
             <div className="flex flex-wrap items-center gap-6 text-cream/30">
-              {['AI-Assisted Matching', 'Verified Professionals', 'Exclusive · Limited Intake'].map((item, i) => (
+              {['Private Introductions', 'Verified Members', 'Invite-Only · Jakarta'].map((item, i) => (
                 <span key={item} className="flex items-center gap-6">
                   <span className="text-xs tracking-wider font-sans">{item}</span>
                   {i < 2 && <span className="w-px h-3 bg-cream/15" />}
@@ -83,7 +83,7 @@ export default function Hero() {
                 </span>
                 <span className="text-cognac text-xs font-sans tracking-wide">3 new matches found</span>
               </div>
-              <a href="/auth" className="text-cream/30 text-xs font-sans hover:text-cognac transition-colors">See all →</a>
+              <a href="/join" className="text-cream/30 text-xs font-sans hover:text-cognac transition-colors">See all →</a>
             </div>
 
             {/* Primary match card */}
@@ -176,8 +176,8 @@ export default function Hero() {
                   {/* Lock overlay */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-espresso/70 backdrop-blur-[1px]">
                     <p className="text-cream/40 text-lg mb-1">🔒</p>
-                    <a href="/auth" className="text-cognac/70 text-[10px] font-sans tracking-wide hover:text-cognac transition-colors">
-                      Unlock · $5/mo
+                    <a href="/join" className="text-cognac/70 text-[10px] font-sans tracking-wide hover:text-cognac transition-colors">
+                      Mutual interest required
                     </a>
                   </div>
                 </div>
