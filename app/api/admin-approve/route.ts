@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Send approval email with dashboard link
-  const dashboardUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://join-curated.netlify.app'}/dashboard`
+  const dashboardUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://cintakaudandia.netlify.app'}/dashboard`
 
   await resend.emails.send({
     from: 'Curated <onboarding@resend.dev>',

@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
     }))
   }
   sends.push(resend.emails.send({
-    from: 'Curated <onboarding@resend.dev>',
+    from: 'Cinta Kau Dan Dia <onboarding@resend.dev>',
     to: email,
     subject: 'Pendaftaran Cinta Kau Dan Dia kamu sudah diterima',
     html: applicantHtml({ name }),
@@ -107,5 +107,5 @@ function founderHtml({ name, email, age, gender, occupation, city, goals, linked
 }
 
 function applicantHtml({ name }: { name: string }) {
-  return `<!DOCTYPE html><html><body style="background:#0E0907;color:#F0E6D6;font-family:Georgia,serif;padding:40px 24px;max-width:560px;margin:0 auto;"><p style="font-size:11px;letter-spacing:0.35em;text-transform:uppercase;color:#C49A6E;">Cinta Kau Dan Dia</p><h1 style="font-size:28px;font-weight:300;">Hi ${name},</h1><p style="font-size:16px;color:#C4AD97;line-height:1.8;">Kamu sudah di waitlist.</p><p style="font-size:15px;color:#C4AD97;line-height:1.8;">Kami review aplikasimu dan kabari dalam 24–48 jam. Sementara itu kamu sudah bisa browse member di dashboard.</p><a href="https://join-curated.netlify.app/dashboard" style="display:inline-block;background:#C49A6E;color:#0E0907;padding:14px 32px;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;font-weight:600;text-decoration:none;">Lihat Member →</a><p style="font-size:12px;color:#7A6558;margin-top:32px;">Tim Cinta Kau Dan Dia · Jakarta</p></body></html>`
+  return `<!DOCTYPE html><html><body style="background:#0E0907;color:#F0E6D6;font-family:Georgia,serif;padding:40px 24px;max-width:560px;margin:0 auto;"><p style="font-size:11px;letter-spacing:0.35em;text-transform:uppercase;color:#C49A6E;">Cinta Kau Dan Dia</p><h1 style="font-size:28px;font-weight:300;">Hi ${name},</h1><p style="font-size:16px;color:#C4AD97;line-height:1.8;">Kamu sudah di waitlist.</p><p style="font-size:15px;color:#C4AD97;line-height:1.8;">Kami review aplikasimu dan kabari dalam 24–48 jam. Sementara itu kamu sudah bisa browse member di dashboard.</p><a href="https://cintakaudandia.netlify.app/dashboard" style="display:inline-block;background:#C49A6E;color:#0E0907;padding:14px 32px;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;font-weight:600;text-decoration:none;">Lihat Member →</a><p style="font-size:12px;color:#7A6558;margin-top:32px;">Tim Cinta Kau Dan Dia · Jakarta</p></body></html>`
 }

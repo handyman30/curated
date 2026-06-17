@@ -4,7 +4,7 @@ import Stripe from 'stripe'
 export async function POST(req: NextRequest) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
   const { email } = await req.json()
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://join-curated.netlify.app'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cintakaudandia.netlify.app'
 
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
