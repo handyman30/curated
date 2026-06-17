@@ -5,6 +5,10 @@ import { useState } from 'react'
 export default function StartPage() {
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
+  const [phone, setPhone] = useState('')
+  const [occupation, setOccupation] = useState('')
+  const [education, setEducation] = useState('')
+  const [religion, setReligion] = useState('')
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
   const [error, setError] = useState('')
@@ -17,7 +21,7 @@ export default function StartPage() {
     const res = await fetch('/api/waitlist', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, name }),
+      body: JSON.stringify({ email, name, phone, occupation, education, religion }),
     })
     const json = await res.json()
     setLoading(false)
@@ -70,6 +74,42 @@ export default function StartPage() {
             onChange={e => setEmail(e.target.value)}
             className="w-full bg-transparent border border-espresso-border text-cream placeholder-cream/25 text-sm font-sans px-4 py-3.5 outline-none focus:border-cognac/50 transition-colors"
           />
+          <input
+            type="tel"
+            placeholder="Nomor HP (WhatsApp)"
+            value={phone}
+            onChange={e => setPhone(e.target.value)}
+            className="w-full bg-transparent border border-espresso-border text-cream placeholder-cream/25 text-sm font-sans px-4 py-3.5 outline-none focus:border-cognac/50 transition-colors"
+          />
+          <input
+            type="text"
+            placeholder="Pekerjaan / Profesi"
+            value={occupation}
+            onChange={e => setOccupation(e.target.value)}
+            className="w-full bg-transparent border border-espresso-border text-cream placeholder-cream/25 text-sm font-sans px-4 py-3.5 outline-none focus:border-cognac/50 transition-colors"
+          />
+          <input
+            type="text"
+            placeholder="Pendidikan / Gelar"
+            value={education}
+            onChange={e => setEducation(e.target.value)}
+            className="w-full bg-transparent border border-espresso-border text-cream placeholder-cream/25 text-sm font-sans px-4 py-3.5 outline-none focus:border-cognac/50 transition-colors"
+          />
+          <select
+            value={religion}
+            onChange={e => setReligion(e.target.value)}
+            className="w-full bg-espresso border border-espresso-border text-sm font-sans px-4 py-3.5 outline-none focus:border-cognac/50 transition-colors appearance-none"
+            style={{ color: religion ? '#F0E6D6' : 'rgba(240,230,214,0.25)' }}
+          >
+            <option value="" disabled>Agama</option>
+            <option value="Islam">Islam</option>
+            <option value="Kristen">Kristen</option>
+            <option value="Katolik">Katolik</option>
+            <option value="Hindu">Hindu</option>
+            <option value="Buddha">Buddha</option>
+            <option value="Konghucu">Konghucu</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
           {error && <p className="text-red-400/70 text-xs font-sans">{error}</p>}
           <button
             type="submit"

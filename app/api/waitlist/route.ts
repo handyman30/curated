@@ -3,7 +3,7 @@ import { supabaseAdmin } from '@/lib/supabase'
 import { Resend } from 'resend'
 
 export async function POST(req: NextRequest) {
-  const { email, name } = await req.json()
+  const { email, name, phone, occupation, education, religion } = await req.json()
 
   if (!email) return NextResponse.json({ error: 'Email required' }, { status: 400 })
 
@@ -12,11 +12,27 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: (e as Error).message }, { status: 500 })
   }
 
-  const { error } = await admin.from('profiles').upsert({
+  let { error } = await admin.from('profiles').upsert({
     email,
     name: name || null,
+    phone: phone || null,
+    occupation: occupation || null,
+    education: education || null,
+    religion: religion || null,
     status: 'waitlist',
   }, { onConflict: 'email' })
+
+  // Fall back if education/religion columns don't exist yet
+  if (error?.message?.includes('education') || error?.message?.includes('religion')) {
+    const result = await admin.from('profiles').upsert({
+      email,
+      name: name || null,
+      phone: phone || null,
+      occupation: occupation || null,
+      status: 'waitlist',
+    }, { onConflict: 'email' })
+    error = result.error
+  }
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
@@ -29,7 +45,7 @@ export async function POST(req: NextRequest) {
         from: 'Curated <onboarding@resend.dev>',
         to: founderEmail,
         subject: `Waitlist — ${name || email}`,
-        html: `<body style="background:#0E0907;color:#F0E6D6;font-family:Georgia,serif;padding:40px 24px;"><p style="color:#C49A6E;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;">New Waitlist Signup</p><h2 style="font-weight:300;">${name || '—'}</h2><p style="color:#C4AD97;">${email}</p></body>`,
+        html: `<body style="background:#0E0907;color:#F0E6D6;font-family:Georgia,serif;padding:40px 24px;"><p style="color:#C49A6E;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;">New Waitlist Signup</p><h2 style="font-weight:300;">${name || '—'}</h2><p style="color:#C4AD97;">${email}</p>${phone ? `<p style="color:#C4AD97;">📱 ${phone}</p>` : ''}${occupation ? `<p style="color:#C4AD97;">💼 ${occupation}</p>` : ''}${education ? `<p style="color:#C4AD97;">🎓 ${education}</p>` : ''}${religion ? `<p style="color:#C4AD97;">🕌 ${religion}</p>` : ''}</body>`,
       }))
     }
     sends.push(resend.emails.send({
