@@ -16,6 +16,9 @@ type Applicant = {
   goals: string
   linkedin: string
   instagram: string
+  phone: string
+  education: string
+  religion: string
   status: string
   created_at: string
 }
@@ -137,7 +140,7 @@ export default function AdminPage() {
     <div className="min-h-screen bg-espresso">
       <header className="sticky top-0 z-40 bg-espresso/95 backdrop-blur-sm border-b border-espresso-border">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <p className="font-serif font-light text-cream tracking-[0.2em] uppercase">Curated Admin</p>
+          <p className="font-serif font-light text-cream tracking-[0.2em] uppercase">Cinta Kau Dan Dia Admin</p>
           <div className="flex items-center gap-1 border border-espresso-border p-1 flex-wrap">
             {(['waitlist', 'approved', 'rejected'] as const).map((t) => (
               <button
@@ -288,18 +291,23 @@ export default function AdminPage() {
           <div className="space-y-3">
             {filtered.map((a) => (
               <div key={a.id} className="border border-espresso-border p-5 flex flex-col md:flex-row md:items-center gap-4" style={{ background: '#1A110C' }}>
-                <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="flex-1 grid grid-cols-2 md:grid-cols-5 gap-3">
                   <div>
-                    <p className="text-cream/80 font-sans text-sm font-medium">{a.name}</p>
+                    <p className="text-cream/80 font-sans text-sm font-medium">{a.name || '—'}</p>
                     <p className="text-cream/40 text-xs font-sans">{a.email}</p>
+                    {a.phone && <p className="text-cognac/60 text-xs font-sans mt-0.5">📱 {a.phone}</p>}
                   </div>
                   <div>
-                    <p className="text-cream/60 text-xs font-sans capitalize">{a.gender} · {a.age}</p>
-                    <p className="text-cream/40 text-xs font-sans">{a.occupation}</p>
+                    <p className="text-cream/60 text-xs font-sans capitalize">{a.gender ? `${a.gender} · ` : ''}{a.age || '—'}</p>
+                    <p className="text-cream/40 text-xs font-sans">{a.occupation || '—'}</p>
                   </div>
                   <div>
-                    <p className="text-cream/60 text-xs font-sans">{a.city}</p>
-                    <p className="text-cream/40 text-xs font-sans capitalize">{a.goals}</p>
+                    <p className="text-cream/60 text-xs font-sans">{a.education || '—'}</p>
+                    <p className="text-cream/40 text-xs font-sans">{a.religion || '—'}</p>
+                  </div>
+                  <div>
+                    <p className="text-cream/60 text-xs font-sans">{a.city || '—'}</p>
+                    <p className="text-cream/40 text-xs font-sans capitalize">{a.goals || '—'}</p>
                   </div>
                   <div>
                     {a.linkedin && <a href={a.linkedin} target="_blank" className="text-cognac/60 text-xs font-sans hover:text-cognac block truncate">LinkedIn →</a>}
