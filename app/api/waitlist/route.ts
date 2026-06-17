@@ -42,9 +42,9 @@ export async function POST(req: NextRequest) {
     const sends = []
     if (founderEmail) {
       sends.push(resend.emails.send({
-        from: 'Curated <onboarding@resend.dev>',
+        from: 'Cinta Kau Dan Dia <onboarding@resend.dev>',
         to: founderEmail,
-        subject: `Waitlist — ${name || email}`,
+        subject: `Waitlist Cinta Kau Dan Dia — ${name || 'Pendaftar Baru'}`,
         html: `<body style="background:#0E0907;color:#F0E6D6;font-family:Georgia,serif;padding:40px 24px;"><p style="color:#C49A6E;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;">New Waitlist Signup</p><h2 style="font-weight:300;">${name || '—'}</h2><p style="color:#C4AD97;">${email}</p>${phone ? `<p style="color:#C4AD97;">📱 ${phone}</p>` : ''}${occupation ? `<p style="color:#C4AD97;">💼 ${occupation}</p>` : ''}${education ? `<p style="color:#C4AD97;">🎓 ${education}</p>` : ''}${religion ? `<p style="color:#C4AD97;">🕌 ${religion}</p>` : ''}</body>`,
       }))
     }

@@ -22,7 +22,7 @@ export default function SubscribePage() {
   }, [])
 
   async function handleSubscribe() {
-    if (!email) { setError('Enter your email to continue.'); return }
+    if (!email) { setError('Masukkan email kamu untuk melanjutkan.'); return }
     setLoading(true)
     setError('')
     try {
@@ -33,9 +33,9 @@ export default function SubscribePage() {
       })
       const { url } = await res.json()
       if (url) window.location.href = url
-      else setError('Could not start checkout. Try again.')
+      else setError('Tidak bisa memulai pembayaran. Coba lagi.')
     } catch {
-      setError('Something went wrong. Try again.')
+      setError('Terjadi kesalahan. Coba lagi.')
     }
     setLoading(false)
   }
@@ -45,7 +45,7 @@ export default function SubscribePage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <a href="/" className="block text-center font-serif font-light text-cream text-xl tracking-[0.25em] uppercase mb-12">
-          Curated
+          Cinta Kau Dan Dia
         </a>
 
         {/* Card */}
@@ -62,10 +62,10 @@ export default function SubscribePage() {
 
           <div className="space-y-3 mb-8">
             {[
-              'We\'ve confirmed the other person is interested in you',
-              'Get their full name, Instagram & LinkedIn',
-              'No ghosting — both sides said yes before you pay',
-              'We handle the introduction personally',
+              'Kami konfirmasi bahwa orang tersebut juga tertarik padamu',
+              'Dapatkan nama lengkap, Instagram & LinkedIn mereka',
+              'Tidak ada ghosting — kedua pihak sudah setuju sebelum bayar',
+              'Kami yang urus perkenalan secara personal',
             ].map((f) => (
               <div key={f} className="flex items-start gap-3">
                 <span className="text-cognac text-xs mt-0.5 flex-shrink-0">✓</span>
@@ -76,7 +76,7 @@ export default function SubscribePage() {
 
           {!email && (
             <div className="mb-4">
-              <label className="block text-cream/35 text-[10px] tracking-[0.25em] uppercase mb-2 font-sans">Your email</label>
+              <label className="block text-cream/35 text-[10px] tracking-[0.25em] uppercase mb-2 font-sans">Email kamu</label>
               <input
                 type="email"
                 value={email}
@@ -98,13 +98,13 @@ export default function SubscribePage() {
           </button>
 
           <p className="text-center text-cream/20 text-xs font-sans mt-4">
-            Secured by Stripe. No card stored with us.
+            Aman dengan Stripe. Kartu tidak tersimpan di sistem kami.
           </p>
         </div>
 
         <div className="text-center mt-6">
           <button onClick={() => router.back()} className="text-cream/25 text-xs font-sans hover:text-cream/50 transition-colors">
-            ← Back to matches
+            ← Kembali ke match
           </button>
         </div>
       </div>

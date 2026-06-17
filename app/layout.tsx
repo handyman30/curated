@@ -17,19 +17,19 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Curated — Exclusive Matchmaking for Ambitious Professionals',
+  title: 'Cinta Kau Dan Dia — Matchmaking Eksklusif untuk Profesional Jakarta',
   description:
-    'AI-assisted matchmaking for ambitious Indonesian professionals. Verified profiles, curated introductions, serious relationships only.',
+    'Matchmaking berbasis AI untuk profesional Indonesia. Profil terverifikasi, perkenalan personal, untuk hubungan serius.',
   openGraph: {
-    title: 'Curated',
-    description: 'Stop swiping. Start meeting curated matches.',
+    title: 'Cinta Kau Dan Dia',
+    description: 'Berhenti swipe. Mulai bertemu dengan orang yang tepat.',
     type: 'website',
   },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${inter.variable}`}>
+    <html lang="id" className={`${cormorant.variable} ${inter.variable}`}>
       <body className="bg-espresso text-cream antialiased font-sans">
         {children}
         <WhatsAppChat />

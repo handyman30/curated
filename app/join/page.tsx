@@ -75,7 +75,7 @@ export default function JoinPage() {
     <div className="min-h-screen bg-espresso flex items-center justify-center px-6">
       <div className="w-full max-w-sm">
         <a href="/" className="block text-center font-serif font-light text-cream text-xl tracking-[0.25em] uppercase mb-12">
-          Curated
+          Cinta Kau Dan Dia
         </a>
 
         <div className="border border-espresso-border p-8 text-center" style={{ background: '#1A110C' }}>
@@ -96,7 +96,7 @@ export default function JoinPage() {
               href="/dashboard"
               className="block w-full bg-cognac text-espresso py-3 text-xs tracking-[0.2em] uppercase font-sans font-semibold hover:bg-cognac-light transition-colors"
             >
-              Browse Member →
+              Lihat Member →
             </a>
             <a
               href="https://wa.me/61400403294"

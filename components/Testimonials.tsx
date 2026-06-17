@@ -5,21 +5,21 @@ import { useScrollAnimation } from '@/hooks/useScrollAnimation'
 const TESTIMONIALS = [
   {
     quote:
-      "I wasted two years on apps meeting people who weren't serious. Within weeks on Curated, I was introduced to someone actually compatible.",
+      "Dua tahun buang waktu di app ketemu orang yang tidak serius. Beberapa minggu di Cinta Kau Dan Dia, aku langsung dikenalkan dengan seseorang yang benar-benar cocok.",
     name: 'Anindya R.',
     role: 'Strategy Consultant, Jakarta',
     initial: 'A',
   },
   {
     quote:
-      "The verification process made me feel safe. Every introduction felt intentional, not random. This is what dating should feel like.",
+      "Proses verifikasinya bikin aku merasa aman. Setiap perkenalan terasa disengaja, bukan asal-asalan. Seperti inilah seharusnya kenalan.",
     name: 'Priscilla M.',
-    role: 'Associate, Leading Law Firm',
+    role: 'Associate, Firma Hukum Terkemuka',
     initial: 'P',
   },
   {
     quote:
-      "As someone who travels constantly for work, I needed something that respects my time. Curated delivers introductions that are actually worth taking.",
+      "Sebagai orang yang sering traveling untuk kerja, aku butuh sesuatu yang menghargai waktuku. Cinta Kau Dan Dia memberikan perkenalan yang benar-benar worth it.",
     name: 'Dinda S.',
     role: 'VP Finance, Jakarta',
     initial: 'D',
@@ -39,10 +39,10 @@ export default function Testimonials() {
           }`}
         >
           <p className="text-cognac/60 text-xs tracking-[0.35em] uppercase mb-4 font-sans">
-            Stories
+            Cerita
           </p>
           <h2 className="font-serif font-light text-4xl md:text-5xl text-cream">
-            What Our Members Say
+            Kata Mereka
           </h2>
         </div>
 
@@ -81,7 +81,7 @@ export default function Testimonials() {
 
         {/* Disclaimer */}
         <p className="mt-6 text-center text-cream/20 text-xs font-sans tracking-wide">
-          Names changed for privacy. Testimonials represent founding member feedback.
+          Nama diubah untuk privasi. Testimoni mewakili feedback anggota pendiri.
         </p>
       </div>
     </section>

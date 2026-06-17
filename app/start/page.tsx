@@ -32,7 +32,7 @@ export default function StartPage() {
   if (done) {
     return (
       <div className="min-h-screen bg-espresso flex flex-col items-center justify-center px-6 text-center gap-5">
-        <p className="font-serif font-light text-cream text-xl tracking-[0.3em] uppercase">Curated</p>
+        <p className="font-serif font-light text-cream text-xl tracking-[0.3em] uppercase">Cinta Kau Dan Dia</p>
         <h2 className="font-serif font-light text-3xl text-cream">Kamu masuk.</h2>
         <p className="text-cream/40 text-sm font-sans max-w-xs leading-relaxed">
           Cek inbox kamu. Kami akan review dan kabari dalam waktu dekat.
@@ -47,7 +47,7 @@ export default function StartPage() {
 
         {/* Header */}
         <div className="text-center space-y-4">
-          <p className="font-serif font-light text-cream text-xl tracking-[0.3em] uppercase">Curated</p>
+          <p className="font-serif font-light text-cream text-xl tracking-[0.3em] uppercase">Cinta Kau Dan Dia</p>
           <h1 className="font-serif font-light text-3xl text-cream leading-tight">
             Komunitas eksklusif<br />
             <span className="italic text-cream/45">untuk profesional Jakarta.</span>

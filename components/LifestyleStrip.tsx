@@ -4,23 +4,23 @@ import { useScrollAnimation } from '@/hooks/useScrollAnimation'
 
 const CARDS = [
   {
-    label: 'Ambitious',
-    headline: "For women\nwho've outgrown\nthe apps.",
-    sub: 'Curated is built for Jakarta professionals tired of wasting weekends on the wrong men.',
+    label: 'Ambisius',
+    headline: "Untuk wanita\nyang lebih dari\nsekedar app.",
+    sub: 'Cinta Kau Dan Dia dibangun untuk profesional Jakarta yang lelah membuang waktu dengan orang yang salah.',
     gradient: 'linear-gradient(145deg, #1A110C 0%, #3D2416 60%, #1A110C 100%)',
     accent: true,
   },
   {
-    label: 'Verified',
-    headline: 'Every man\nis vetted\nbefore you meet.',
-    sub: 'We verify identity, education, and career before any introduction.',
+    label: 'Terverifikasi',
+    headline: 'Setiap pria\ndiverifikasi\nsebelum bertemu.',
+    sub: 'Kami verifikasi identitas, pendidikan, dan karier sebelum perkenalan dilakukan.',
     gradient: 'linear-gradient(145deg, #221610 0%, #4A2E1A 50%, #221610 100%)',
     accent: false,
   },
   {
-    label: 'Exclusive',
-    headline: 'Your circle\nshould match\nyour ambition.',
-    sub: 'Limited membership. Lawyers, founders, consultants, bankers — people who get it.',
+    label: 'Eksklusif',
+    headline: 'Lingkaranmu\nharus sesuai\nambisimu.',
+    sub: 'Keanggotaan terbatas. Pengacara, founder, konsultan, banker — orang yang paham.',
     gradient: 'linear-gradient(145deg, #1A110C 0%, #2E1A0E 60%, #1A110C 100%)',
     accent: false,
   },

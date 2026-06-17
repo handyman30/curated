@@ -4,34 +4,34 @@ import { useScrollAnimation } from '@/hooks/useScrollAnimation'
 
 const BENEFITS = [
   {
-    title: 'No Endless Swiping',
+    title: 'Tidak Ada Swipe Tanpa Henti',
     description:
-      'Skip the exhausting swipe culture. We do the matching work so you can focus on real conversations.',
+      'Lewati budaya swipe yang melelahkan. Kami yang mencarikan match, kamu fokus pada percakapan nyata.',
   },
   {
-    title: 'Verified Profiles',
+    title: 'Profil Terverifikasi',
     description:
-      'Every member is verified for identity, education, and professional background before joining.',
+      'Setiap anggota diverifikasi identitas, pendidikan, dan latar belakang profesionalnya sebelum bergabung.',
   },
   {
-    title: 'AI-Assisted Compatibility',
+    title: 'Kompatibilitas Berbantuan AI',
     description:
-      'Our AI analyses deep compatibility signals — values, lifestyle, ambitions — not just a profile photo.',
+      'AI kami menganalisis sinyal kompatibilitas mendalam — nilai, gaya hidup, ambisi — bukan sekadar foto profil.',
   },
   {
-    title: 'Exclusive Community',
+    title: 'Komunitas Eksklusif',
     description:
-      'Limited membership ensures quality. Ambitious, serious professionals only — no time-wasters.',
+      'Keanggotaan terbatas untuk menjaga kualitas. Hanya profesional serius dan ambisius — tidak ada yang buang waktu.',
   },
   {
-    title: 'Quality Introductions',
+    title: 'Perkenalan Berkualitas',
     description:
-      'Every introduction is intentional. We only connect you when there is genuine potential.',
+      'Setiap perkenalan disengaja. Kami hanya menghubungkanmu ketika ada potensi yang nyata.',
   },
   {
-    title: 'Serious Relationships Only',
+    title: 'Hanya untuk Hubungan Serius',
     description:
-      'Everyone on Curated wants the same thing. No ambiguity — only people ready for commitment.',
+      'Semua orang di Cinta Kau Dan Dia menginginkan hal yang sama. Tidak ada ambiguitas — hanya mereka yang siap berkomitmen.',
   },
 ]
 
@@ -48,10 +48,10 @@ export default function WhyCurated() {
           }`}
         >
           <p className="text-cognac/60 text-xs tracking-[0.35em] uppercase mb-4 font-sans">
-            Our Approach
+            Pendekatan Kami
           </p>
           <h2 className="font-serif font-light text-4xl md:text-5xl text-cream max-w-md leading-tight">
-            Why Curated is Different
+            Mengapa Cinta Kau Dan Dia Berbeda
           </h2>
         </div>
 

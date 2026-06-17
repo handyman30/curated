@@ -13,7 +13,7 @@ const TIERS = [
       'Welcome drinks & snacks (fries)',
       'MC host + games (Kahoot, kartu, drawing)',
       'Venue premium di Jakarta',
-      'Tamu diverifikasi Curated — no randoms',
+      'Tamu diverifikasi Cinta Kau Dan Dia — bukan sembarang orang',
     ],
     cta: 'Lihat Acara',
     href: '#events',
@@ -27,7 +27,7 @@ const TIERS = [
     description: 'Kami temukan match kamu, konfirmasi minat kedua pihak, lalu perkenalkan — tidak ada ghosting.',
     features: [
       'Profil terverifikasi sepenuhnya',
-      'Perkenalan personal oleh Curated',
+      'Perkenalan personal oleh Cinta Kau Dan Dia',
       'Minat kedua pihak dikonfirmasi dahulu',
       'Akses Instagram & LinkedIn match',
     ],
@@ -66,9 +66,9 @@ export default function Membership() {
           }`}
         >
           <p className="text-cognac/60 text-xs tracking-[0.35em] uppercase mb-4 font-sans">
-            Founding Members
+            Anggota Pendiri
           </p>
-          <h2 className="font-serif font-light text-4xl md:text-5xl text-cream">Membership</h2>
+          <h2 className="font-serif font-light text-4xl md:text-5xl text-cream">Keanggotaan</h2>
         </div>
 
         <div
@@ -81,7 +81,7 @@ export default function Membership() {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-cognac/70" />
             </span>
             <span className="text-cream/50 text-xs font-sans tracking-wider">
-              Free during beta — founding members get locked-in pricing forever
+              Gratis selama beta — anggota pendiri mendapat harga terkunci selamanya
             </span>
           </div>
         </div>
@@ -147,7 +147,7 @@ export default function Membership() {
           style={{ transitionDelay: '500ms' }}
         >
           <p className="text-cream/25 text-xs font-sans tracking-wide">
-            Free during beta. No credit card required to join the waitlist.
+            Gratis selama beta. Tidak perlu kartu kredit untuk daftar waitlist.
           </p>
         </div>
       </div>

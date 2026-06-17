@@ -44,17 +44,17 @@ export default function AuthPage() {
       <div className="min-h-screen bg-espresso flex items-center justify-center px-6">
         <div className="w-full max-w-sm text-center">
           <div className="font-serif text-4xl text-cognac mb-6">✓</div>
-          <h2 className="font-serif font-light text-2xl text-cream mb-4">Check your inbox</h2>
+          <h2 className="font-serif font-light text-2xl text-cream mb-4">Cek inbox kamu</h2>
           <p className="text-cream/40 text-sm font-sans leading-relaxed mb-6">
-            We sent a confirmation link to <span className="text-cream/70">{email}</span>.
-            Click it to activate your account, then come back to log in.
+            Kami mengirim link konfirmasi ke <span className="text-cream/70">{email}</span>.
+            Klik untuk aktifkan akunmu, lalu kembali untuk masuk.
           </p>
-          <p className="text-cream/25 text-xs font-sans">Check junk/spam if you don&apos;t see it.</p>
+          <p className="text-cream/25 text-xs font-sans">Cek folder junk/spam jika tidak terlihat.</p>
           <button
             onClick={() => setMode('login')}
             className="mt-8 text-cognac text-xs tracking-[0.15em] uppercase font-sans underline-offset-4 hover:underline"
           >
-            Back to login
+            Kembali ke halaman masuk
           </button>
         </div>
       </div>
@@ -66,7 +66,7 @@ export default function AuthPage() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <a href="/" className="block text-center font-serif font-light text-cream text-xl tracking-[0.25em] uppercase mb-12">
-          Curated
+          Cinta Kau Dan Dia
         </a>
 
         {/* Toggle */}
@@ -79,14 +79,14 @@ export default function AuthPage() {
                 mode === m ? 'bg-cognac text-espresso font-semibold' : 'text-cream/40 hover:text-cream'
               }`}
             >
-              {m === 'login' ? 'Log in' : 'Register'}
+              {m === 'login' ? 'Masuk' : 'Daftar'}
             </button>
           ))}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-cream/35 text-[10px] tracking-[0.25em] uppercase mb-2 font-sans">Email</label>
+            <label className="block text-cream/35 text-[10px] tracking-[0.25em] uppercase mb-2 font-sans">Alamat Email</label>
             <input
               type="email"
               required
@@ -97,7 +97,7 @@ export default function AuthPage() {
             />
           </div>
           <div>
-            <label className="block text-cream/35 text-[10px] tracking-[0.25em] uppercase mb-2 font-sans">Password</label>
+            <label className="block text-cream/35 text-[10px] tracking-[0.25em] uppercase mb-2 font-sans">Kata Sandi</label>
             <input
               type="password"
               required
@@ -105,7 +105,7 @@ export default function AuthPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className={inputClass}
-              placeholder="Min. 6 characters"
+              placeholder="Min. 6 karakter"
             />
           </div>
 
@@ -118,22 +118,22 @@ export default function AuthPage() {
             disabled={loading}
             className="w-full bg-cognac text-espresso py-3.5 text-xs tracking-[0.2em] uppercase font-sans font-semibold hover:bg-cognac-light transition-colors disabled:opacity-50 mt-2"
           >
-            {loading ? '...' : mode === 'login' ? 'Log in' : 'Create account'}
+            {loading ? '...' : mode === 'login' ? 'Masuk' : 'Buat Akun'}
           </button>
         </form>
 
         <p className="text-center text-cream/25 text-xs font-sans mt-6">
-          {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
+          {mode === 'login' ? 'Belum punya akun? ' : 'Sudah punya akun? '}
           <button
             onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError('') }}
             className="text-cognac hover:underline underline-offset-4"
           >
-            {mode === 'login' ? 'Register' : 'Log in'}
+            {mode === 'login' ? 'Daftar' : 'Masuk'}
           </button>
         </p>
 
         <p className="text-center text-cream/15 text-xs font-sans mt-8">
-          By registering, you confirm you have applied via the waitlist.
+          Dengan mendaftar, kamu konfirmasi telah mendaftar melalui waitlist.
         </p>
       </div>
     </div>

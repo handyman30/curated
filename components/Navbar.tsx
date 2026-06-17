@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 
 const NAV_LINKS = [
-  { label: 'Events', href: '#events' },
-  { label: 'How It Works', href: '#how-it-works' },
-  { label: 'Membership', href: '#membership' },
+  { label: 'Acara', href: '#events' },
+  { label: 'Cara Kerja', href: '#how-it-works' },
+  { label: 'Keanggotaan', href: '#membership' },
 ]
 
 export default function Navbar() {
@@ -41,7 +41,7 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <a href="/" className="font-serif text-xl text-cream tracking-[0.25em] uppercase select-none font-light">
-          Curated
+          Cinta Kau Dan Dia
         </a>
 
         <div className="hidden md:flex items-center gap-10">
@@ -70,13 +70,13 @@ export default function Navbar() {
                 href="/auth"
                 className="text-cream/40 hover:text-cream text-xs tracking-[0.15em] uppercase font-sans transition-colors duration-200 hidden md:block"
               >
-                Log in
+                Masuk
               </a>
               <a
                 href="/join"
                 className="border border-cognac/50 text-cognac text-xs tracking-[0.15em] uppercase px-5 py-2.5 font-sans hover:bg-cognac hover:text-espresso transition-all duration-200"
               >
-                Apply
+                Daftar
               </a>
             </>
           )}
@@ -111,7 +111,7 @@ export default function Navbar() {
             </a>
           ) : (
             <a href="/auth" onClick={() => setMenuOpen(false)} className="text-cream/60 text-sm tracking-[0.15em] uppercase font-sans hover:text-cream transition-colors">
-              Log in
+              Masuk
             </a>
           )}
         </div>
