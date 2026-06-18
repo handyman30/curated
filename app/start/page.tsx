@@ -53,7 +53,7 @@ export default function StartPage() {
             <span className="italic text-cream/45">untuk profesional Jakarta.</span>
           </h1>
           <p className="text-cream/35 text-sm font-sans leading-relaxed">
-            Setiap anggota diverifikasi. Gathering bulanan. Tidak semua diterima.
+            Member terverifikasi & terseleksi. Gathering bulanan untuk kenalan langsung. Karena koneksi yang baik dimulai dari kualitas, bukan kuantitas.
           </p>
         </div>
 
